@@ -1,0 +1,415 @@
+@import "tailwindcss";
+
+/* =========================
+   NOMADAI — GLOBAL STYLES
+   (Clean + premium, single source of truth)
+   ========================= */
+
+/* FORCE LIGHT LOOK (no dark-mode switching yet) */
+:root {
+  --fg: #0f172a;
+  --muted: #64748b;
+
+  --card: rgba(255, 255, 255, 0.74);
+  --card-border: rgba(255, 255, 255, 0.48);
+
+  --shadow-1: 0 10px 30px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-2: 0 18px 50px rgba(15, 23, 42, 0.12), 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+html,
+body {
+  height: 100%;
+  color-scheme: light;
+}
+
+body {
+  color: var(--fg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background:
+    radial-gradient(circle at 18% 10%, rgba(59,130,246,0.14), transparent 45%),
+    radial-gradient(circle at 82% 86%, rgba(168,85,247,0.12), transparent 55%),
+    radial-gradient(circle at 60% 30%, rgba(148,163,184,0.18), transparent 60%),
+    #f1f5f9;
+}
+
+/* =========================
+   Core UI utilities
+   ========================= */
+
+.glass {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(14px);
+}
+
+.elevated { box-shadow: var(--shadow-1); }
+.elevated-strong { box-shadow: var(--shadow-2); }
+
+.premium-hover {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.premium-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
+/* map route anim */
+@keyframes dash {
+  to { stroke-dashoffset: -140; }
+}
+.route-anim {
+  stroke-dasharray: 10 10;
+  stroke-dashoffset: 0;
+  animation: dash 3.6s linear infinite;
+}
+
+.pin-glow {
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.16),
+    0 0 0 6px rgba(59, 130, 246, 0.10);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  * { scroll-behavior: smooth; }
+}
+
+/* =========================
+   Login background helper
+   ========================= */
+.sky-bg {
+  position: relative; /* helps stacking */
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.55), transparent 55%),
+    radial-gradient(circle at 70% 10%, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, #bfe3ff 0%, #e9f4ff 35%, #f7fbff 70%, #ffffff 100%);
+}
+
+/* =========================
+   Shimmer (skeleton + thinking rows)
+   ========================= */
+@keyframes shimmerMove {
+  0% { transform: translateX(-60%); }
+  100% { transform: translateX(60%); }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.55),
+    transparent
+  );
+  animation: shimmerMove 1.2s ease-in-out infinite;
+}
+
+/* =========================
+   INSANE HERO BACKGROUND (welcome + thinking overlay)
+   ========================= */
+@keyframes auroraShift {
+  0% { transform: translateX(-8%) translateY(-6%); }
+  50% { transform: translateX(6%) translateY(6%); }
+  100% { transform: translateX(-8%) translateY(-6%); }
+}
+
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 2px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 2px);
+  mix-blend-mode: soft-light;
+}
+
+.aurora {
+  position: absolute;
+  inset: -40%;
+  filter: blur(50px);
+  opacity: 0.75;
+  animation: auroraShift 10s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.35), transparent 55%),
+    radial-gradient(circle at 70% 25%, rgba(168,85,247,0.30), transparent 55%),
+    radial-gradient(circle at 40% 75%, rgba(16,185,129,0.22), transparent 55%),
+    radial-gradient(circle at 85% 80%, rgba(244,63,94,0.14), transparent 55%);
+}
+
+.grid-fade {
+  background:
+    linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15,23,42,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 35%, black 35%, transparent 70%);
+  opacity: 0.35;
+}
+
+/* AI orb */
+@keyframes orbPulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+.ai-orb {
+  animation: orbPulse 2.4s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.0) 60%),
+    radial-gradient(circle at 65% 35%, rgba(59,130,246,0.40), transparent 60%),
+    radial-gradient(circle at 40% 70%, rgba(168,85,247,0.35), transparent 60%),
+    radial-gradient(circle at 70% 75%, rgba(16,185,129,0.22), transparent 65%);
+}
+
+/* =========================
+   LOGIN PLANE ANIMATION
+   ========================= */
+
+@keyframes planeFly {
+  0% {
+    transform: translateX(-160px) translateY(0px) rotate(3deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  50% {
+    transform: translateX(calc(50vw - 20px)) translateY(-10px) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 160px)) translateY(0px) rotate(4deg);
+    opacity: 0.95;
+  }
+}
+
+@keyframes contrailGrow {
+  0% { width: 0px; opacity: 0; }
+  12% { opacity: 0.65; }
+  55% { width: 220px; opacity: 0.55; }
+  100% { width: 340px; opacity: 0.0; }
+}
+
+.plane-runway {
+  position: absolute;
+  top: 18px;          /* a bit higher */
+  left: 0;
+  right: 0;
+  height: 96px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;        /* ensure above clouds/lines */
+}
+
+.plane-wrap {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: planeFly 8.5s ease-in-out infinite;
+  filter: drop-shadow(0 14px 22px rgba(15, 23, 42, 0.14));
+}
+
+.contrail {
+  height: 3px;
+  width: 0px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.0),
+    rgba(255,255,255,0.85),
+    rgba(255,255,255,0.0)
+  );
+  box-shadow: 0 0 18px rgba(255,255,255,0.55);
+  animation: contrailGrow 8.5s ease-in-out infinite;
+}
+
+/* make it feel like a real plane, not a button */
+.plane-svg {
+  width: 64px;
+  height: 64px;
+  transform: rotate(10deg);
+  filter: drop-shadow(0 18px 24px rgba(15, 23, 42, 0.18));
+}
+
+/* tweak runway so it’s more cinematic */
+.plane-runway {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 110px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+/* contrail should sit behind plane */
+.contrail {
+  height: 3px;
+  width: 0px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.0),
+    rgba(255,255,255,0.9),
+    rgba(255,255,255,0.0)
+  );
+  box-shadow: 0 0 20px rgba(255,255,255,0.65);
+  animation: contrailGrow 8.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plane-wrap,
+  .contrail {
+    animation: none;
+  }
+}
+@keyframes planeBob {
+  0% { transform: translateY(0px) rotate(1deg); }
+  50% { transform: translateY(-6px) rotate(-1deg); }
+  100% { transform: translateY(0px) rotate(1deg); }
+}
+.plane-svg {
+  animation: planeBob 2.2s ease-in-out infinite;
+}
+/* =========================
+   Plane v2 (curved + depth)
+   ========================= */
+
+.plane-runway {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 40;
+}
+
+/* MAIN PLANE: curved path using offset-path */
+.plane-main {
+  position: absolute;
+  top: 0;
+  left: -120px;
+  height: 140px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  /* Curved flight path */
+  offset-path: path("M -80 110 C 200 30, 520 10, 980 70 C 1200 100, 1500 40, 1900 80");
+  offset-rotate: auto;
+  animation: planePath 9.2s ease-in-out infinite;
+}
+
+@keyframes planePath {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0.96; }
+}
+
+/* FAR PLANE: smaller + slower (parallax depth) */
+.plane-far {
+  position: absolute;
+  top: 12px;
+  left: -120px;
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+
+  offset-path: path("M -120 60 C 240 30, 620 20, 980 38 C 1200 48, 1500 20, 2000 46");
+  offset-rotate: auto;
+  animation: planePathFar 14.5s ease-in-out infinite;
+  opacity: 0.45;
+}
+
+@keyframes planePathFar {
+  0% { offset-distance: 0%; opacity: 0; }
+  15% { opacity: 0.45; }
+  100% { offset-distance: 100%; opacity: 0.35; }
+}
+
+/* plane svg visuals */
+.plane-svg {
+  width: 66px;
+  height: 66px;
+  filter: drop-shadow(0 20px 26px rgba(15, 23, 42, 0.18));
+}
+
+.plane-svg-far {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 10px 14px rgba(15, 23, 42, 0.12));
+}
+
+/* Contrails */
+.contrail {
+  height: 3px;
+  width: 0px;
+  border-radius: 999px;
+  margin-right: 10px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.0),
+    rgba(255,255,255,0.92),
+    rgba(255,255,255,0.0)
+  );
+  box-shadow: 0 0 22px rgba(255,255,255,0.65);
+  animation: contrailGrow 9.2s ease-in-out infinite;
+}
+
+.contrail-far {
+  height: 2px;
+  width: 0px;
+  border-radius: 999px;
+  margin-right: 10px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.0),
+    rgba(255,255,255,0.75),
+    rgba(255,255,255,0.0)
+  );
+  box-shadow: 0 0 16px rgba(255,255,255,0.5);
+  animation: contrailGrowFar 14.5s ease-in-out infinite;
+}
+
+@keyframes contrailGrow {
+  0% { width: 0px; opacity: 0; }
+  12% { opacity: 0.7; }
+  55% { width: 240px; opacity: 0.55; }
+  100% { width: 420px; opacity: 0; }
+}
+
+@keyframes contrailGrowFar {
+  0% { width: 0px; opacity: 0; }
+  16% { opacity: 0.45; }
+  55% { width: 140px; opacity: 0.32; }
+  100% { width: 260px; opacity: 0; }
+}
+
+/* subtle atmospheric haze at top */
+.plane-haze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 20%, rgba(255,255,255,0.55), transparent 55%);
+  opacity: 0.35;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .plane-main,
+  .plane-far,
+  .contrail,
+  .contrail-far {
+    animation: none;
+  }
+}
