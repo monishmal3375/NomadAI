@@ -6,21 +6,21 @@ export type Intent = {
   days?: number;
   budget?: number;
   people?: number;
-
-  // support both names so old/new code won't break
-  preferences?: string[];
   prefs?: string[];
 };
 
-export default function IntentCard({ intent }: { intent: Intent }) {
-  const prefs = intent.preferences ?? intent.prefs ?? [];
+function fmtMoney(n: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+}
 
+export default function IntentCard({ intent }: { intent: Intent }) {
+  // Only show pills for fields that exist
   const pills = [
-    intent.from && `From: ${intent.from}`,
-    intent.to && `To: ${intent.to}`,
-    intent.days && `${intent.days} days`,
-    intent.people && `${intent.people} people`,
-    typeof intent.budget === "number" && `$${intent.budget.toLocaleString()}`,
+    intent.from ? `From: ${intent.from}` : null,
+    intent.to ? `To: ${intent.to}` : null,
+    typeof intent.days === "number" ? `${intent.days} days` : null,
+    typeof intent.people === "number" ? `${intent.people} people` : null,
+    typeof intent.budget === "number" ? `Budget: ${fmtMoney(intent.budget)}` : null,
   ].filter(Boolean) as string[];
 
   return (
@@ -29,10 +29,9 @@ export default function IntentCard({ intent }: { intent: Intent }) {
         <div>
           <div className="text-sm font-semibold text-slate-900">Trip summary</div>
           <div className="mt-1 text-sm text-slate-500">
-            What NomadAI understood (UI-only).
+            Shows only what the user provided (UI demo).
           </div>
         </div>
-
         <div className="h-10 w-10 rounded-2xl bg-white/70 border border-white/50 grid place-items-center">
           ✦
         </div>
@@ -49,23 +48,16 @@ export default function IntentCard({ intent }: { intent: Intent }) {
             </span>
           ))
         ) : (
-          <span className="text-sm text-slate-500">Run a plan to see extracted details.</span>
+          <span className="text-sm text-slate-500">
+            Run a plan to see extracted details.
+          </span>
         )}
       </div>
 
-      {prefs.length ? (
-        <div className="mt-4">
-          <div className="text-xs text-slate-500">Preferences</div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {prefs.map((p) => (
-              <span
-                key={p}
-                className="text-xs px-2.5 py-1.5 rounded-full bg-white/60 border border-white/45 text-slate-700"
-              >
-                {p}
-              </span>
-            ))}
-          </div>
+      {intent.prefs?.length ? (
+        <div className="mt-4 text-sm text-slate-700">
+          Preferences:{" "}
+          <span className="text-slate-500">{intent.prefs.join(", ")}</span>
         </div>
       ) : null}
     </div>

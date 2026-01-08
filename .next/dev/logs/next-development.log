@@ -1,21 +1,372 @@
-[00:00:00.738] Server  LOG     ✓ Ready in 562ms
-[00:00:13.601] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:02:58.576] Server  LOG     ✓ Compiled in 86ms
-[00:03:59.955] Server  LOG     ✓ Compiled in 46ms
-[00:07:25.611] Server  LOG     ✓ Compiled in 75ms
-[00:08:35.683] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:36.003] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:09:01.161] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:01.347] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:09:16.573] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:38.892] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:16:52.797] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:30:32.062] Server  LOG     ✓ Compiled in 62ms
-[00:30:44.614] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:35:12.519] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:35:12.688] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[04:53:43.841] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[04:53:46.095] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[04:53:46.328] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[04:53:48.242] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[04:55:10.354] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:00.627] Server  LOG     ✓ Ready in 463ms
+[00:00:05.533] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:42.536] Server  LOG     ✓ Compiled in 336ms
+[00:03:47.865] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:54.078] Server  LOG     ✓ Compiled in 69ms
+[00:05:54.166] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:05:54.167] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:05:58.520] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:58.744] Browser LOG     {}
+[00:05:58.744] Browser LOG     {}
+[00:06:02.490] Browser LOG     {}
+[00:06:02.490] Browser LOG     {}
+[00:06:02.650] Browser LOG     {}
+[00:06:02.650] Browser LOG     {}
+[00:06:02.897] Browser LOG     {}
+[00:06:02.897] Browser LOG     {}
+[00:06:02.897] Browser LOG     {}
+[00:06:02.897] Browser LOG     {}
+[00:06:03.073] Browser LOG     {}
+[00:06:03.073] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.633] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:03.634] Browser LOG     {}
+[00:06:06.318] Browser LOG     {}
+[00:06:06.319] Browser LOG     {}
+[00:06:06.567] Browser LOG     {}
+[00:06:06.567] Browser LOG     {}
+[00:06:06.741] Browser LOG     {}
+[00:06:06.741] Browser LOG     {}
+[00:06:06.854] Browser LOG     {}
+[00:06:06.854] Browser LOG     {}
+[00:06:07.059] Browser LOG     {}
+[00:06:07.059] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.484] Browser LOG     {}
+[00:06:07.755] Browser LOG     {}
+[00:06:07.755] Browser LOG     {}
+[00:06:07.756] Browser LOG     {}
+[00:06:07.756] Browser LOG     {}
+[00:06:07.756] Browser LOG     {}
+[00:06:07.756] Browser LOG     {}
+[00:06:07.938] Browser LOG     {}
+[00:06:07.939] Browser LOG     {}
+[00:06:08.091] Browser LOG     {}
+[00:06:08.091] Browser LOG     {}
+[00:06:08.248] Browser LOG     {}
+[00:06:08.248] Browser LOG     {}
+[00:06:08.634] Browser LOG     {}
+[00:06:08.634] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:08.925] Browser LOG     {}
+[00:06:14.926] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:06:14.926] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:06:18.080] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:06:18.080] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:13:08.993] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:09.222] Browser LOG     {}
+[00:13:09.222] Browser LOG     {}
+[00:13:10.473] Browser LOG     {}
+[00:13:10.473] Browser LOG     {}
+[00:13:11.013] Browser LOG     {}
+[00:13:11.014] Browser LOG     {}
+[00:13:11.235] Browser LOG     {}
+[00:13:11.235] Browser LOG     {}
+[00:13:11.235] Browser LOG     {}
+[00:13:11.235] Browser LOG     {}
+[00:13:11.424] Browser LOG     {}
+[00:13:11.424] Browser LOG     {}
+[00:13:11.688] Browser LOG     {}
+[00:13:11.688] Browser LOG     {}
+[00:13:11.688] Browser LOG     {}
+[00:13:11.688] Browser LOG     {}
+[00:13:11.851] Browser LOG     {}
+[00:13:11.851] Browser LOG     {}
+[00:13:11.969] Browser LOG     {}
+[00:13:11.969] Browser LOG     {}
+[00:13:12.078] Browser LOG     {}
+[00:13:12.078] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.396] Browser LOG     {}
+[00:13:12.667] Browser LOG     {}
+[00:13:12.667] Browser LOG     {}
+[00:13:12.868] Browser LOG     {}
+[00:13:12.868] Browser LOG     {}
+[00:13:13.068] Browser LOG     {}
+[00:13:13.068] Browser LOG     {}
+[00:13:13.205] Browser LOG     {}
+[00:13:13.205] Browser LOG     {}
+[00:13:13.563] Browser LOG     {}
+[00:13:13.563] Browser LOG     {}
+[00:13:13.784] Browser LOG     {}
+[00:13:13.784] Browser LOG     {}
+[00:13:14.240] Browser LOG     {}
+[00:13:14.240] Browser LOG     {}
+[00:13:14.241] Browser LOG     {}
+[00:13:14.241] Browser LOG     {}
+[00:13:14.419] Browser LOG     {}
+[00:13:14.419] Browser LOG     {}
+[00:13:14.869] Browser LOG     {}
+[00:13:14.869] Browser LOG     {}
+[00:13:15.004] Browser LOG     {}
+[00:13:15.004] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.232] Browser LOG     {}
+[00:13:15.588] Browser LOG     {}
+[00:13:15.588] Browser LOG     {}
+[00:13:15.747] Browser LOG     {}
+[00:13:15.748] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.197] Browser LOG     {}
+[00:13:16.312] Browser LOG     {}
+[00:13:16.312] Browser LOG     {}
+[00:13:16.468] Browser LOG     {}
+[00:13:16.468] Browser LOG     {}
+[00:13:16.602] Browser LOG     {}
+[00:13:16.602] Browser LOG     {}
+[00:13:16.869] Browser LOG     {}
+[00:13:16.869] Browser LOG     {}
+[00:13:16.869] Browser LOG     {}
+[00:13:16.869] Browser LOG     {}
+[00:13:17.659] Browser LOG     {}
+[00:13:17.659] Browser LOG     {}
+[00:13:17.841] Browser LOG     {}
+[00:13:17.841] Browser LOG     {}
+[00:13:17.999] Browser LOG     {}
+[00:13:17.999] Browser LOG     {}
+[00:13:18.174] Browser LOG     {}
+[00:13:18.174] Browser LOG     {}
+[00:13:18.495] Browser LOG     {}
+[00:13:18.495] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.748] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.749] Browser LOG     {}
+[00:13:20.921] Browser LOG     {}
+[00:13:20.921] Browser LOG     {}
+[00:13:21.188] Browser LOG     {}
+[00:13:21.188] Browser LOG     {}
+[00:13:21.188] Browser LOG     {}
+[00:13:21.188] Browser LOG     {}
+[00:13:21.309] Browser LOG     {}
+[00:13:21.309] Browser LOG     {}
+[00:13:21.645] Browser LOG     {}
+[00:13:21.645] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.069] Browser LOG     {}
+[00:13:22.323] Browser LOG     {}
+[00:13:22.323] Browser LOG     {}
+[00:13:22.541] Browser LOG     {}
+[00:13:22.541] Browser LOG     {}
+[00:13:22.542] Browser LOG     {}
+[00:13:22.542] Browser LOG     {}
+[00:13:22.697] Browser LOG     {}
+[00:13:22.697] Browser LOG     {}
+[00:13:23.017] Browser LOG     {}
+[00:13:23.017] Browser LOG     {}
+[00:13:23.217] Browser LOG     {}
+[00:13:23.217] Browser LOG     {}
+[00:13:23.328] Browser LOG     {}
+[00:13:23.328] Browser LOG     {}
+[00:13:23.536] Browser LOG     {}
+[00:13:23.536] Browser LOG     {}
+[00:13:24.128] Browser LOG     {}
+[00:13:24.128] Browser LOG     {}
+[00:13:24.128] Browser LOG     {}
+[00:13:24.128] Browser LOG     {}
+[00:13:24.363] Browser LOG     {}
+[00:13:24.364] Browser LOG     {}
+[00:13:24.364] Browser LOG     {}
+[00:13:24.364] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:24.995] Browser LOG     {}
+[00:13:25.491] Browser LOG     {}
+[00:13:25.491] Browser LOG     {}
+[00:13:25.764] Browser LOG     {}
+[00:13:25.764] Browser LOG     {}
+[00:13:25.916] Browser LOG     {}
+[00:13:25.916] Browser LOG     {}
+[00:13:26.257] Browser LOG     {}
+[00:13:26.258] Browser LOG     {}
+[00:13:26.258] Browser LOG     {}
+[00:13:26.258] Browser LOG     {}
+[00:13:26.390] Browser LOG     {}
+[00:13:26.390] Browser LOG     {}
+[00:13:27.979] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:13:27.980] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:13:31.136] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:13:31.136] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:14:40.262] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:40.557] Browser LOG     {}
+[00:14:40.557] Browser LOG     {}
+[00:14:44.072] Browser LOG     {}
+[00:14:44.072] Browser LOG     {}
+[00:14:44.712] Browser LOG     {}
+[00:14:44.712] Browser LOG     {}
+[00:14:44.912] Browser LOG     {}
+[00:14:44.912] Browser LOG     {}
+[00:14:44.912] Browser LOG     {}
+[00:14:44.912] Browser LOG     {}
+[00:14:45.117] Browser LOG     {}
+[00:14:45.117] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.656] Browser LOG     {}
+[00:14:45.790] Browser LOG     {}
+[00:14:45.790] Browser LOG     {}
+[00:14:46.015] Browser LOG     {}
+[00:14:46.015] Browser LOG     {}
+[00:14:46.261] Browser LOG     {}
+[00:14:46.261] Browser LOG     {}
+[00:14:46.381] Browser LOG     {}
+[00:14:46.381] Browser LOG     {}
+[00:14:46.577] Browser LOG     {}
+[00:14:46.577] Browser LOG     {}
+[00:14:46.963] Browser LOG     {}
+[00:14:46.963] Browser LOG     {}
+[00:14:47.097] Browser LOG     {}
+[00:14:47.097] Browser LOG     {}
+[00:14:47.436] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.437] Browser LOG     {}
+[00:14:47.632] Browser LOG     {}
+[00:14:47.632] Browser LOG     {}
+[00:14:47.632] Browser LOG     {}
+[00:14:47.632] Browser LOG     {}
+[00:14:47.851] Browser LOG     {}
+[00:14:47.851] Browser LOG     {}
+[00:14:48.156] Browser LOG     {}
+[00:14:48.156] Browser LOG     {}
+[00:14:48.156] Browser LOG     {}
+[00:14:48.156] Browser LOG     {}
+[00:14:48.287] Browser LOG     {}
+[00:14:48.287] Browser LOG     {}
+[00:14:48.448] Browser LOG     {}
+[00:14:48.448] Browser LOG     {}
+[00:14:48.581] Browser LOG     {}
+[00:14:48.581] Browser LOG     {}
+[00:14:48.742] Browser LOG     {}
+[00:14:48.742] Browser LOG     {}
+[00:14:48.919] Browser LOG     {}
+[00:14:48.920] Browser LOG     {}
+[00:14:48.920] Browser LOG     {}
+[00:14:48.920] Browser LOG     {}
+[00:14:49.300] Browser LOG     {}
+[00:14:49.301] Browser LOG     {}
+[00:14:49.301] Browser LOG     {}
+[00:14:49.301] Browser LOG     {}
+[00:14:49.301] Browser LOG     {}
+[00:14:49.301] Browser LOG     {}
+[00:14:50.732] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:14:50.732] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:14:53.887] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:14:53.887] Browser LOG     {"days":3,"from":"chicago","to":"canada for 3 days"}
+[00:25:08.347] Server  LOG     ✓ Compiled in 64ms
+[00:25:45.230] Server  LOG     Raw model response: {}
+[00:25:45.231] Server  LOG     Model output: "{\"from\":\"chicago\",\"days\":3,\"people\":null,\"budget\":null,\"prefs\":null}"
+[00:26:23.888] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:26:38.634] Server  LOG     Raw model response: {}
+[00:26:38.635] Server  LOG     Model output: "{\n  \"from\": \"chicago\",\n  \"days\": 3,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
+[00:28:55.368] Server  LOG     ✓ Compiled in 61ms
+[00:28:59.161] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:29:12.564] Server  LOG     Raw model response: {}
+[00:29:12.565] Server  LOG     Model output: "{\n  \"from\": \"chicago\",\n  \"days\": 3,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
+[00:29:12.672] Browser LOG     Intent API response status: 200
+[00:29:12.672] Browser LOG     Intent API response data: {"intent":{"days":3,"from":"chicago"}}
+[00:30:27.486] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:37.007] Server  LOG     Raw model response: {}
+[00:30:37.007] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"Canada\",\n  \"days\": 3,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
+[00:30:37.116] Browser LOG     Intent API response status: 200
+[00:30:37.117] Browser LOG     Intent API response data: {"intent":{"days":3,"from":"Chicago","to":"Canada"}}
+[00:30:52.244] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:31:02.435] Server  LOG     Raw model response: {}
+[00:31:02.435] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"Canada\",\n  \"days\": 4,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
+[00:31:02.542] Browser LOG     Intent API response status: 200
+[00:31:02.542] Browser LOG     Intent API response data: {"intent":{"days":4,"from":"Chicago","to":"Canada"}}

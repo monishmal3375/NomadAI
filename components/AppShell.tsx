@@ -18,41 +18,66 @@ import type { Intent } from "./IntentCard";
 
 type Phase = "welcome" | "generating" | "results";
 
-const DEFAULT_INTENT: Intent = {
-  from: "Chicago",
-  to: "New York",
-  days: 3,
-  people: 2,
-  budget: 5000,
-  prefs: ["museums", "food", "night views"],
-};
+// IMPORTANT: no defaults
+const DEFAULT_INTENT: Intent = {};
 
 export default function AppShell() {
   const [phase, setPhase] = useState<Phase>("welcome");
   const [prompt, setPrompt] = useState("");
 
   const [day, setDay] = useState(1);
-  const [days] = useState(3);
 
-  const [intent] = useState<Intent>(DEFAULT_INTENT);
+  const [intent, setIntent] = useState<Intent>(DEFAULT_INTENT);
 
   const [exportOpen, setExportOpen] = useState(false);
   const [savedTripsOpen, setSavedTripsOpen] = useState(false);
+
+  const [planError, setPlanError] = useState<string | null>(null);
 
   const canPlan = useMemo(() => prompt.trim().length > 0, [prompt]);
 
   async function onPlan() {
     if (!canPlan) return;
 
+    setPlanError(null);
     setPhase("generating");
 
-    // Simulated latency (replace later with real API calls)
-    await wait(700);
-    await wait(900);
-    await wait(900);
-    await wait(650);
+    try {
+      // ✅ Use your server API (OpenAI-backed) to extract intent
+      const res = await fetch("/api/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      console.log("Intent API response status:", res.status);
+      
 
-    setPhase("results");
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Intent API failed (${res.status})`);
+      }
+
+      const data = (await res.json()) as { intent?: Intent };
+console.log("Intent API response data:", data);
+      if (!data?.intent) {
+        throw new Error("Intent API returned no intent.");
+      }
+
+      setIntent(data.intent);
+
+      // Simulated latency (keep your premium feel)
+      await wait(700);
+      await wait(900);
+      await wait(650);
+
+      setPhase("results");
+    } catch (e: any) {
+      // Fallback: keep app usable even if API fails
+      console.error(e);
+      setPlanError(e?.message ?? "Failed to extract intent.");
+      setIntent(extractIntentFallback(prompt));
+      setPhase("results");
+    }
   }
 
   return (
@@ -91,8 +116,6 @@ export default function AppShell() {
 
         {/* Main layout */}
         <div className="flex-1 min-h-0 flex gap-6">
-          {/* Keep sidebar visible (your choice). If you want it hidden until results,
-              change this to: {phase === "results" ? <Sidebar /> : null} */}
           <Sidebar />
 
           <main className="flex-1 min-w-0 relative overflow-hidden">
@@ -110,9 +133,6 @@ export default function AppShell() {
                   <div className="absolute inset-0 noise">
                     <div className="aurora" />
                     <div className="absolute inset-0 grid-fade" />
-                    <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/50 blur-3xl" />
-                    <div className="absolute top-24 -right-32 h-96 w-96 rounded-full bg-white/35 blur-3xl" />
-                    <div className="absolute bottom-[-120px] left-40 h-[520px] w-[520px] rounded-full bg-white/25 blur-3xl" />
                   </div>
 
                   <div className="relative h-full p-10 flex items-center justify-center">
@@ -157,13 +177,19 @@ export default function AppShell() {
 
                         <textarea
                           className="mt-3 w-full h-28 resize-none bg-transparent outline-none text-slate-900 placeholder:text-slate-400 text-[15px] leading-relaxed"
-                          placeholder='Example: "Chicago to New York for 3 days, budget $5000. I like museums, food, and night views."'
+                          placeholder='Example: "From Chicago to New York, 4 people, 4 days, $3000 budget."'
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
                           onKeyDown={(e) => {
                             if ((e.metaKey || e.ctrlKey) && e.key === "Enter") onPlan();
                           }}
                         />
+
+                        {planError ? (
+                          <div className="mt-3 text-xs text-rose-600">
+                            {planError}
+                          </div>
+                        ) : null}
 
                         <div className="mt-5 flex items-center justify-between">
                           <div className="text-xs text-slate-600">
@@ -179,18 +205,12 @@ export default function AppShell() {
                           </button>
                         </div>
                       </div>
-
-                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <MiniCard title="Weather-aware" desc="Indoor backups if it rains." />
-                        <MiniCard title="Budget synced" desc="Local currency conversion." />
-                        <MiniCard title="Time-blocked plan" desc="Morning → night schedule." />
-                      </div>
                     </div>
                   </div>
                 </motion.div>
               )}
 
-              {/* GENERATING (RESTORED POPUP OVERLAY) */}
+              {/* GENERATING popup */}
               {phase === "generating" && (
                 <motion.div
                   key="generating"
@@ -200,10 +220,8 @@ export default function AppShell() {
                   transition={{ duration: 0.22 }}
                   className="h-full relative overflow-hidden"
                 >
-                  {/* Dimmed background */}
                   <div className="absolute inset-0 rounded-3xl glass elevated" />
 
-                  {/* Popup */}
                   <div className="absolute inset-0 flex items-center justify-center p-6">
                     <div className="w-full max-w-2xl rounded-[28px] bg-white/70 border border-white/50 elevated p-6 relative overflow-hidden">
                       <div className="absolute inset-0 noise">
@@ -222,21 +240,16 @@ export default function AppShell() {
                               NomadAI is thinking…
                             </div>
                             <div className="text-sm text-slate-600">
-                              Building a weather-aware, budget-synced itinerary.
+                              Extracting intent with AI (OpenAI).
                             </div>
                           </div>
                         </div>
 
                         <div className="mt-6 space-y-3">
-                          <ThinkingRow text="Extracting intent from your request" />
-                          <ThinkingRow text="Fetching weather forecast + best timing" />
-                          <ThinkingRow text="Converting budget to local currency" />
-                          <ThinkingRow text="Generating day-by-day plan" />
-                          <ThinkingRow text="Rendering map + itinerary cards" />
-                        </div>
-
-                        <div className="mt-5 text-xs text-slate-600">
-                          Real API calls may take a few seconds — this keeps the experience premium.
+                          <ThinkingRow text="Extracting trip details" />
+                          <ThinkingRow text="Preparing map route" />
+                          <ThinkingRow text="Preparing itinerary layout" />
+                          <ThinkingRow text="Preparing summary tiles" />
                         </div>
                       </div>
                     </div>
@@ -256,7 +269,7 @@ export default function AppShell() {
                 >
                   {/* 1) Map */}
                   <div className="col-span-4 h-full min-h-0 min-w-0 overflow-hidden">
-                    <MapWrapper onOpenTrips={() => setSavedTripsOpen(true)} />
+                    <MapWrapper onOpenTrips={() => setSavedTripsOpen(true)} intent={intent} />
                   </div>
 
                   {/* 2) Chat */}
@@ -271,7 +284,8 @@ export default function AppShell() {
                   {/* 3) Day planner */}
                   <div className="col-span-3 h-full min-h-0 min-w-0 overflow-hidden">
                     <div className="h-full min-h-0 overflow-auto">
-                      <ItineraryPanel day={day} days={days} onSelectDay={setDay} />
+                      {/* if user didn't specify days, pass 1 so tabs don't look weird */}
+                      <ItineraryPanel day={day} days={intent.days ?? 1} onSelectDay={setDay} />
                     </div>
                   </div>
 
@@ -301,15 +315,6 @@ function wait(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-function MiniCard({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div className="rounded-2xl bg-white/60 border border-white/45 p-4">
-      <div className="text-sm font-semibold text-slate-900">{title}</div>
-      <div className="mt-1 text-sm text-slate-600">{desc}</div>
-    </div>
-  );
-}
-
 function ThinkingRow({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-3">
@@ -320,4 +325,53 @@ function ThinkingRow({ text }: { text: string }) {
       </div>
     </div>
   );
+}
+
+/**
+ * Fallback extractor (ONLY used if your /api/intent fails)
+ */
+function extractIntentFallback(text: string): Intent {
+  const t = text.trim();
+  const out: Intent = {};
+
+  const ft = t.match(/from\s+(.+?)\s+to\s+(.+?)(?:[.,]|$)/i);
+  if (ft) {
+    out.from = cleanPlace(ft[1]);
+    out.to = cleanPlace(ft[2]);
+  } else {
+    const simple = t.match(/(.+?)\s+to\s+(.+?)(?:[.,]|$)/i);
+    if (simple) {
+      out.from = cleanPlace(simple[1]);
+      out.to = cleanPlace(simple[2]);
+    }
+  }
+
+  const days = t.match(/(\d+)\s*(day|days)\b/i);
+  if (days) out.days = clampInt(days[1], 1, 30);
+
+  const people =
+    t.match(/(\d+)\s*(people|persons|travelers|travellers)\b/i) ||
+    t.match(/family\s+of\s+(\d+)\b/i);
+  if (people) out.people = clampInt(people[1], 1, 20);
+
+  const budget =
+    t.match(/\$\s*([0-9,]+)\b/) || t.match(/([0-9,]+)\s*(usd|dollars?)\b/i);
+  if (budget) out.budget = clampMoney(budget[1]);
+
+  return out;
+}
+
+function cleanPlace(s: string) {
+  return s.replace(/\s+/g, " ").replace(/["']/g, "").trim();
+}
+
+function clampInt(n: string, min: number, max: number) {
+  const v = Math.max(min, Math.min(max, parseInt(n, 10)));
+  return Number.isFinite(v) ? v : undefined;
+}
+
+function clampMoney(n: string) {
+  const v = parseInt(n.replace(/,/g, ""), 10);
+  if (!Number.isFinite(v) || v <= 0) return undefined;
+  return v;
 }

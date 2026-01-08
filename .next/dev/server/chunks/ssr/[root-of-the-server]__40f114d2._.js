@@ -156,315 +156,466 @@ __turbopack_context__.s([
     ()=>MapPanel
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Documents/GitHub/NomadAI/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Documents/GitHub/NomadAI/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$maplibre$2d$gl$2f$dist$2f$maplibre$2d$gl$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Documents/GitHub/NomadAI/node_modules/maplibre-gl/dist/maplibre-gl.js [app-ssr] (ecmascript)");
+"use client";
 ;
-function MapPanel() {
+;
+;
+;
+const FALLBACKS = {
+    "Chicago, IL": {
+        lon: -87.6298,
+        lat: 41.8781,
+        label: "Chicago, IL"
+    },
+    "New York, NY": {
+        lon: -74.006,
+        lat: 40.7128,
+        label: "New York, NY"
+    }
+};
+function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+}
+function lerp(a, b, t) {
+    return a + (b - a) * t;
+}
+/**
+ * Super-light geocoding (no key) via OpenStreetMap Nominatim.
+ * Note: Nominatim has rate limits — for a demo UI it’s fine.
+ */ async function geocode(q) {
+    const query = q.trim();
+    if (!query) return null;
+    const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" + encodeURIComponent(query);
+    const res = await fetch(url, {
+        headers: {
+            // A tiny best practice for Nominatim:
+            // include a UA-ish string (they recommend identifying your app)
+            "Accept-Language": "en"
+        }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data?.length) return null;
+    const hit = data[0];
+    return {
+        lat: Number(hit.lat),
+        lon: Number(hit.lon),
+        label: query
+    };
+}
+function MapPanel({ startText = "Chicago, IL", endText = "New York, NY" }) {
+    const wrapRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const mapRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
+    const [start, setStart] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [end, setEnd] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [status, setStatus] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("idle");
+    // Keep labels stable and avoid recreating effects on every keystroke noise
+    const fromLabel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>startText.trim() || "Chicago, IL", [
+        startText
+    ]);
+    const toLabel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>endText.trim() || "New York, NY", [
+        endText
+    ]);
+    // 1) Create the map once
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (!wrapRef.current) return;
+        if (mapRef.current) return;
+        const map = new __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$maplibre$2d$gl$2f$dist$2f$maplibre$2d$gl$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].Map({
+            container: wrapRef.current,
+            // Free raster tiles (no key). Works great for demos.
+            style: {
+                version: 8,
+                sources: {
+                    osm: {
+                        type: "raster",
+                        tiles: [
+                            "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        ],
+                        tileSize: 256,
+                        attribution: "© OpenStreetMap contributors"
+                    }
+                },
+                layers: [
+                    {
+                        id: "osm",
+                        type: "raster",
+                        source: "osm"
+                    }
+                ]
+            },
+            center: [
+                -96,
+                38
+            ],
+            zoom: 3.2,
+            attributionControl: false
+        });
+        map.addControl(new __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$maplibre$2d$gl$2f$dist$2f$maplibre$2d$gl$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].NavigationControl({
+            visualizePitch: false
+        }), "bottom-right");
+        map.addControl(new __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$maplibre$2d$gl$2f$dist$2f$maplibre$2d$gl$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].AttributionControl({
+            compact: true
+        }), "bottom-left");
+        mapRef.current = map;
+        // IMPORTANT: force resize after mount (fixes “blank map” in flex layouts)
+        const t = setTimeout(()=>map.resize(), 50);
+        return ()=>{
+            clearTimeout(t);
+            map.remove();
+            mapRef.current = null;
+        };
+    }, []);
+    // 2) Geocode whenever start/end text changes
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        let alive = true;
+        async function run() {
+            setStatus("loading");
+            // fallbacks if user types nothing / geocode fails
+            const fallbackFrom = FALLBACKS[fromLabel] ?? FALLBACKS["Chicago, IL"];
+            const fallbackTo = FALLBACKS[toLabel] ?? FALLBACKS["New York, NY"];
+            try {
+                const [a, b] = await Promise.all([
+                    geocode(fromLabel),
+                    geocode(toLabel)
+                ]);
+                if (!alive) return;
+                setStart(a ?? fallbackFrom);
+                setEnd(b ?? fallbackTo);
+                setStatus("ready");
+            } catch  {
+                if (!alive) return;
+                setStart(fallbackFrom);
+                setEnd(fallbackTo);
+                setStatus("error");
+            }
+        }
+        run();
+        return ()=>{
+            alive = false;
+        };
+    }, [
+        fromLabel,
+        toLabel
+    ]);
+    // 3) Render/animate markers + line when we have points
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const map = mapRef.current;
+        if (!map) return;
+        if (!start || !end) return;
+        const routeId = "route-line";
+        const routeSourceId = "route-source";
+        const pointsSourceId = "points-source";
+        const from = [
+            start.lon,
+            start.lat
+        ];
+        const to = [
+            end.lon,
+            end.lat
+        ];
+        // helper: safely add/update sources
+        const upsertSource = (id, data)=>{
+            const src = map.getSource(id);
+            if (src) src.setData(data);
+            else map.addSource(id, {
+                type: "geojson",
+                data
+            });
+        };
+        // Wait until style is ready
+        const onLoad = ()=>{
+            // Fit bounds nicely
+            const west = Math.min(from[0], to[0]);
+            const east = Math.max(from[0], to[0]);
+            const south = Math.min(from[1], to[1]);
+            const north = Math.max(from[1], to[1]);
+            map.fitBounds([
+                [
+                    west,
+                    south
+                ],
+                [
+                    east,
+                    north
+                ]
+            ], {
+                padding: 80,
+                duration: 900
+            });
+            // Add / update points source
+            upsertSource(pointsSourceId, {
+                type: "FeatureCollection",
+                features: [
+                    {
+                        type: "Feature",
+                        properties: {
+                            kind: "start"
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: from
+                        }
+                    },
+                    {
+                        type: "Feature",
+                        properties: {
+                            kind: "end"
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: to
+                        }
+                    }
+                ]
+            });
+            // Route source starts as just the first point (for “draw” animation)
+            upsertSource(routeSourceId, {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "LineString",
+                    coordinates: [
+                        from,
+                        from
+                    ]
+                }
+            });
+            // Layers (only add once)
+            if (!map.getLayer(routeId)) {
+                map.addLayer({
+                    id: routeId,
+                    type: "line",
+                    source: routeSourceId,
+                    paint: {
+                        "line-color": "rgba(15,23,42,0.85)",
+                        "line-width": 4,
+                        "line-opacity": 0.85,
+                        "line-dasharray": [
+                            2,
+                            2
+                        ]
+                    }
+                });
+            }
+            // Start marker
+            if (!map.getLayer("start-dot")) {
+                map.addLayer({
+                    id: "start-dot",
+                    type: "circle",
+                    source: pointsSourceId,
+                    filter: [
+                        "==",
+                        [
+                            "get",
+                            "kind"
+                        ],
+                        "start"
+                    ],
+                    paint: {
+                        "circle-radius": 7,
+                        "circle-color": "#0f172a",
+                        "circle-stroke-width": 3,
+                        "circle-stroke-color": "rgba(255,255,255,0.9)"
+                    }
+                });
+            }
+            // End marker
+            if (!map.getLayer("end-dot")) {
+                map.addLayer({
+                    id: "end-dot",
+                    type: "circle",
+                    source: pointsSourceId,
+                    filter: [
+                        "==",
+                        [
+                            "get",
+                            "kind"
+                        ],
+                        "end"
+                    ],
+                    paint: {
+                        "circle-radius": 7,
+                        "circle-color": "#0f172a",
+                        "circle-stroke-width": 3,
+                        "circle-stroke-color": "rgba(255,255,255,0.9)"
+                    }
+                });
+            }
+            // Pulsing ring on end
+            if (!map.getLayer("end-pulse")) {
+                map.addLayer({
+                    id: "end-pulse",
+                    type: "circle",
+                    source: pointsSourceId,
+                    filter: [
+                        "==",
+                        [
+                            "get",
+                            "kind"
+                        ],
+                        "end"
+                    ],
+                    paint: {
+                        "circle-radius": 16,
+                        "circle-color": "rgba(59,130,246,0.12)",
+                        "circle-stroke-width": 2,
+                        "circle-stroke-color": "rgba(59,130,246,0.28)"
+                    }
+                });
+            }
+            // Animate the route "drawing"
+            let raf = 0;
+            const startTime = performance.now();
+            const duration = 1100;
+            const tick = (now)=>{
+                const t = clamp((now - startTime) / duration, 0, 1);
+                const mid = [
+                    lerp(from[0], to[0], t),
+                    lerp(from[1], to[1], t)
+                ];
+                const src = map.getSource(routeSourceId);
+                if (src) {
+                    src.setData({
+                        type: "Feature",
+                        properties: {},
+                        geometry: {
+                            type: "LineString",
+                            coordinates: [
+                                from,
+                                mid
+                            ]
+                        }
+                    });
+                }
+                // pulse ring animation
+                const pulse = 16 + Math.sin(now / 250) * 3;
+                if (map.getLayer("end-pulse")) {
+                    map.setPaintProperty("end-pulse", "circle-radius", pulse);
+                    map.setPaintProperty("end-pulse", "circle-opacity", 0.55 - Math.abs(Math.sin(now / 350)) * 0.35);
+                }
+                if (t < 1) raf = requestAnimationFrame(tick);
+            };
+            raf = requestAnimationFrame(tick);
+            return ()=>cancelAnimationFrame(raf);
+        };
+        if (map.isStyleLoaded()) {
+            const cleanup = onLoad();
+            // also resize again (fixes blank map when panel becomes visible)
+            setTimeout(()=>map.resize(), 50);
+            return cleanup;
+        }
+        map.once("load", ()=>{
+            const cleanup = onLoad();
+            setTimeout(()=>map.resize(), 50);
+            // @ts-expect-error cleanup is fine
+            return cleanup;
+        });
+    }, [
+        start,
+        end
+    ]);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-        className: "h-full rounded-3xl glass elevated premium-hover relative overflow-hidden",
+        className: "h-full min-h-0 rounded-3xl glass elevated premium-hover relative overflow-hidden",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "absolute inset-0 bg-[radial-gradient(circle_at_25%_18%,rgba(59,130,246,0.14),transparent_52%),radial-gradient(circle_at_82%_85%,rgba(148,163,184,0.22),transparent_58%)]"
-            }, void 0, false, {
-                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 5,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "absolute inset-0 opacity-[0.06]",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                    width: "100%",
-                    height: "100%",
-                    viewBox: "0 0 800 600",
-                    preserveAspectRatio: "none",
-                    children: [
-                        Array.from({
-                            length: 14
-                        }).map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
-                                x1: i * 800 / 14,
-                                y1: "0",
-                                x2: i * 800 / 14,
-                                y2: "600",
-                                stroke: "black",
-                                strokeWidth: "1"
-                            }, `v-${i}`, false, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 11,
-                                columnNumber: 13
-                            }, this)),
-                        Array.from({
-                            length: 10
-                        }).map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("line", {
-                                x1: "0",
-                                y1: i * 600 / 10,
-                                x2: "800",
-                                y2: i * 600 / 10,
-                                stroke: "black",
-                                strokeWidth: "1"
-                            }, `h-${i}`, false, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 22,
-                                columnNumber: 13
-                            }, this))
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                    lineNumber: 9,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 8,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "absolute right-[148px] top-4 z-20",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    className: "h-10 px-4 rounded-2xl bg-white/70 border border-white/40 text-sm font-medium text-slate-800 hover:bg-white transition",
-                    children: "View spots"
-                }, void 0, false, {
-                    fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                    lineNumber: 37,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 36,
-                columnNumber: 7
-            }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "relative h-full p-6",
+                className: "absolute left-4 top-4 z-20 rounded-2xl bg-white/70 border border-white/50 px-4 py-3",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-start justify-between",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-sm text-slate-500",
-                                        children: "Destination"
-                                    }, void 0, false, {
-                                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                        lineNumber: 46,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-1 text-2xl font-semibold text-slate-900",
-                                        children: [
-                                            "London ",
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-slate-400",
-                                                children: "·"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                                lineNumber: 48,
-                                                columnNumber: 22
-                                            }, this),
-                                            " 3 days"
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                        lineNumber: 47,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "mt-2 flex gap-2 flex-wrap",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-xs px-2 py-1 rounded-full bg-white/60 border border-white/40 text-slate-600",
-                                                children: "Live weather"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                                lineNumber: 51,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-xs px-2 py-1 rounded-full bg-white/60 border border-white/40 text-slate-600",
-                                                children: "Currency synced"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                                lineNumber: 54,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "text-xs px-2 py-1 rounded-full bg-white/60 border border-white/40 text-slate-600",
-                                                children: "Route optimized"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                                lineNumber: 57,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                        lineNumber: 50,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 45,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {}, void 0, false, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 64,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
+                        className: "text-xs text-slate-500",
+                        children: "Route"
+                    }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 44,
+                        lineNumber: 320,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "absolute inset-0 opacity-[0.22] pointer-events-none",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                            width: "100%",
-                            height: "100%",
-                            viewBox: "0 0 800 600",
-                            preserveAspectRatio: "none",
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                                d: "M120 420 C220 260, 320 280, 410 240 C520 190, 610 230, 690 170",
-                                stroke: "rgba(15,23,42,0.7)",
-                                strokeWidth: "5",
-                                fill: "none",
-                                strokeLinecap: "round",
-                                strokeDasharray: "10 10"
-                            }, void 0, false, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 70,
-                                columnNumber: 13
-                            }, this)
-                        }, void 0, false, {
-                            fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                            lineNumber: 69,
-                            columnNumber: 11
-                        }, this)
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 68,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Pin, {
-                        x: "22%",
-                        y: "70%",
-                        label: "D1"
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 82,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Pin, {
-                        x: "52%",
-                        y: "50%",
-                        label: "D2"
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 83,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(Pin, {
-                        x: "76%",
-                        y: "32%",
-                        label: "D3"
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 84,
-                        columnNumber: 9
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "absolute left-1/2 top-[42%] -translate-x-1/2 rounded-2xl bg-slate-900 text-white px-4 py-3 shadow-md flex items-center gap-3",
+                        className: "mt-0.5 text-sm font-semibold text-slate-900",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "h-10 w-10 rounded-xl bg-white/15"
+                            fromLabel,
+                            " ",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                className: "text-slate-400",
+                                children: "→"
                             }, void 0, false, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 88,
-                                columnNumber: 11
+                                lineNumber: 322,
+                                columnNumber: 23
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-xs opacity-70",
-                                        children: "City"
-                                    }, void 0, false, {
-                                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                        lineNumber: 90,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "text-sm font-medium",
-                                        children: "Central London"
-                                    }, void 0, false, {
-                                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                        lineNumber: 91,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                                lineNumber: 89,
-                                columnNumber: 11
-                            }, this)
+                            " ",
+                            toLabel
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 87,
+                        lineNumber: 321,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "mt-1 text-xs text-slate-500",
+                        children: status === "loading" ? "Locating places…" : "Accurate markers + animated route"
+                    }, void 0, false, {
+                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
+                        lineNumber: 324,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 42,
+                lineNumber: 319,
                 columnNumber: 7
-            }, this)
-        ]
-    }, void 0, true, {
-        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-        lineNumber: 3,
-        columnNumber: 5
-    }, this);
-}
-function Pin({ x, y, label }) {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "absolute -translate-x-1/2 -translate-y-1/2",
-        style: {
-            left: x,
-            top: y
-        },
-        children: [
+            }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "h-11 w-11 rounded-full bg-slate-900 shadow-md flex items-center justify-center",
+                className: "absolute inset-0",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "h-8 w-8 rounded-full bg-white/10 flex items-center justify-center",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                        className: "text-xs font-semibold text-white",
-                        children: label
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                        lineNumber: 104,
-                        columnNumber: 11
-                    }, this)
+                    ref: wrapRef,
+                    className: "h-full w-full"
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                    lineNumber: 103,
+                    lineNumber: 331,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 102,
+                lineNumber: 330,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "mx-auto mt-2 h-2 w-2 rounded-full bg-slate-900/70"
-            }, void 0, false, {
+            status === "loading" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "absolute inset-0 pointer-events-none",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute inset-0 bg-[radial-gradient(circle_at_25%_18%,rgba(59,130,246,0.10),transparent_55%),radial-gradient(circle_at_82%_85%,rgba(148,163,184,0.18),transparent_60%)]"
+                    }, void 0, false, {
+                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
+                        lineNumber: 337,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "absolute inset-0 opacity-30",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "absolute inset-0 shimmer"
+                        }, void 0, false, {
+                            fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
+                            lineNumber: 339,
+                            columnNumber: 13
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
+                        lineNumber: 338,
+                        columnNumber: 11
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-                lineNumber: 107,
-                columnNumber: 7
+                lineNumber: 336,
+                columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Documents/GitHub/NomadAI/components/MapPanel.tsx",
-        lineNumber: 101,
+        lineNumber: 317,
         columnNumber: 5
     }, this);
 }
@@ -481,42 +632,58 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$Nomad
 "use client";
 ;
 ;
-function MapWrapper({ onOpenTrips }) {
+function MapWrapper({ onOpenTrips, intent }) {
+    const startText = intent?.from ? String(intent.from) : "Chicago, IL";
+    const endText = intent?.to ? String(intent.to) : "New York, NY";
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
         className: "h-full min-h-0 min-w-0 relative overflow-hidden",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "absolute right-4 top-4 z-30 flex items-center gap-2",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                    onClick: onOpenTrips,
-                    className: "h-10 px-4 rounded-2xl bg-white/70 border border-white/55 text-sm text-slate-800 hover:bg-white transition",
-                    children: "Saved trips"
-                }, void 0, false, {
-                    fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
-                    lineNumber: 10,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: onOpenTrips,
+                        className: "h-10 px-4 rounded-2xl bg-white/70 border border-white/55 text-sm text-slate-800 hover:bg-white transition",
+                        children: "Saved trips"
+                    }, void 0, false, {
+                        fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
+                        lineNumber: 20,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        type: "button",
+                        className: "h-10 px-4 rounded-2xl bg-white/70 border border-white/55 text-sm text-slate-800 hover:bg-white transition",
+                        children: "View spots"
+                    }, void 0, false, {
+                        fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
+                        lineNumber: 27,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
-                lineNumber: 9,
+                lineNumber: 19,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "h-full min-h-0",
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$MapPanel$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$MapPanel$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                    startText: startText,
+                    endText: endText
+                }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
-                    lineNumber: 19,
+                    lineNumber: 36,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
-                lineNumber: 18,
+                lineNumber: 35,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Documents/GitHub/NomadAI/components/upgrade/MapWrapper.tsx",
-        lineNumber: 7,
+        lineNumber: 17,
         columnNumber: 5
     }, this);
 }
@@ -1021,14 +1188,20 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Documents/GitHub/NomadAI/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
 "use client";
 ;
+function fmtMoney(n) {
+    return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+    }).format(n);
+}
 function IntentCard({ intent }) {
-    const prefs = intent.preferences ?? intent.prefs ?? [];
+    // Only show pills for fields that exist
     const pills = [
-        intent.from && `From: ${intent.from}`,
-        intent.to && `To: ${intent.to}`,
-        intent.days && `${intent.days} days`,
-        intent.people && `${intent.people} people`,
-        typeof intent.budget === "number" && `$${intent.budget.toLocaleString()}`
+        intent.from ? `From: ${intent.from}` : null,
+        intent.to ? `To: ${intent.to}` : null,
+        typeof intent.days === "number" ? `${intent.days} days` : null,
+        typeof intent.people === "number" ? `${intent.people} people` : null,
+        typeof intent.budget === "number" ? `Budget: ${fmtMoney(intent.budget)}` : null
     ].filter(Boolean);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "rounded-3xl glass elevated premium-hover p-5",
@@ -1048,7 +1221,7 @@ function IntentCard({ intent }) {
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "mt-1 text-sm text-slate-500",
-                                children: "What NomadAI understood (UI-only)."
+                                children: "Shows only what the user provided (UI demo)."
                             }, void 0, false, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
                                 lineNumber: 31,
@@ -1065,7 +1238,7 @@ function IntentCard({ intent }) {
                         children: "✦"
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                        lineNumber: 36,
+                        lineNumber: 35,
                         columnNumber: 9
                     }, this)
                 ]
@@ -1081,51 +1254,38 @@ function IntentCard({ intent }) {
                         children: p
                     }, p, false, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                        lineNumber: 44,
+                        lineNumber: 43,
                         columnNumber: 13
                     }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                     className: "text-sm text-slate-500",
                     children: "Run a plan to see extracted details."
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                    lineNumber: 52,
+                    lineNumber: 51,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                lineNumber: 41,
+                lineNumber: 40,
                 columnNumber: 7
             }, this),
-            prefs.length ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "mt-4",
+            intent.prefs?.length ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "mt-4 text-sm text-slate-700",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "text-xs text-slate-500",
-                        children: "Preferences"
+                    "Preferences:",
+                    " ",
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: "text-slate-500",
+                        children: intent.prefs.join(", ")
                     }, void 0, false, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                        lineNumber: 58,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "mt-2 flex flex-wrap gap-2",
-                        children: prefs.map((p)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                className: "text-xs px-2.5 py-1.5 rounded-full bg-white/60 border border-white/45 text-slate-700",
-                                children: p
-                            }, p, false, {
-                                fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                                lineNumber: 61,
-                                columnNumber: 15
-                            }, this))
-                    }, void 0, false, {
-                        fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                        lineNumber: 59,
+                        lineNumber: 60,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/IntentCard.tsx",
-                lineNumber: 57,
+                lineNumber: 58,
                 columnNumber: 9
             }, this) : null
         ]
@@ -1909,7 +2069,7 @@ function AppShell() {
     const [prompt, setPrompt] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
     const [day, setDay] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(1);
     const [days] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(3);
-    const [intent] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(DEFAULT_INTENT);
+    const [intent, setIntent] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(DEFAULT_INTENT);
     const [exportOpen, setExportOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [savedTripsOpen, setSavedTripsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const canPlan = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>prompt.trim().length > 0, [
@@ -1918,12 +2078,31 @@ function AppShell() {
     async function onPlan() {
         if (!canPlan) return;
         setPhase("generating");
-        // Simulated latency (replace later with real API calls)
-        await wait(700);
-        await wait(900);
-        await wait(900);
-        await wait(650);
-        setPhase("results");
+        try {
+            const res = await fetch("/api/intent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    prompt
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Intent API failed");
+            setIntent((prev)=>({
+                    ...prev,
+                    ...data.intent
+                }));
+            setDay(1);
+            // optional: keep your “thinking” feeling even if API is fast
+            await wait(600);
+            setPhase("results");
+        } catch (err) {
+            console.error(err);
+            // fallback: go back to welcome or show toast (your choice)
+            setPhase("welcome");
+        }
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "h-screen overflow-hidden",
@@ -1941,7 +2120,7 @@ function AppShell() {
                                         children: "NomadAI"
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                        lineNumber: 64,
+                                        lineNumber: 78,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1949,13 +2128,13 @@ function AppShell() {
                                         children: "Intelligent Itinerary Orchestrator"
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                        lineNumber: 65,
+                                        lineNumber: 79,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                lineNumber: 63,
+                                lineNumber: 77,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1968,7 +2147,7 @@ function AppShell() {
                                                 className: "h-9 w-9 rounded-xl bg-slate-900/5 border border-white/40"
                                             }, void 0, false, {
                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                lineNumber: 72,
+                                                lineNumber: 86,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1976,13 +2155,13 @@ function AppShell() {
                                                 placeholder: "Search trips, cities, saved plans…"
                                             }, void 0, false, {
                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                lineNumber: 73,
+                                                lineNumber: 87,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                        lineNumber: 71,
+                                        lineNumber: 85,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -1991,7 +2170,7 @@ function AppShell() {
                                         children: "Logout"
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                        lineNumber: 79,
+                                        lineNumber: 93,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2000,24 +2179,24 @@ function AppShell() {
                                             className: "h-7 w-7 rounded-full bg-slate-900/15"
                                         }, void 0, false, {
                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                            lineNumber: 87,
+                                            lineNumber: 101,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                        lineNumber: 86,
+                                        lineNumber: 100,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                lineNumber: 70,
+                                lineNumber: 84,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                        lineNumber: 62,
+                        lineNumber: 76,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2025,7 +2204,7 @@ function AppShell() {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$Sidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                lineNumber: 96,
+                                lineNumber: 110,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -2058,41 +2237,41 @@ function AppShell() {
                                                             className: "aurora"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 111,
+                                                            lineNumber: 125,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "absolute inset-0 grid-fade"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 112,
+                                                            lineNumber: 126,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/50 blur-3xl"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 113,
+                                                            lineNumber: 127,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "absolute top-24 -right-32 h-96 w-96 rounded-full bg-white/35 blur-3xl"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 114,
+                                                            lineNumber: 128,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "absolute bottom-[-120px] left-40 h-[520px] w-[520px] rounded-full bg-white/25 blur-3xl"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 115,
+                                                            lineNumber: 129,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 110,
+                                                    lineNumber: 124,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2112,14 +2291,14 @@ function AppShell() {
                                                                                         className: "h-2 w-2 rounded-full bg-emerald-500"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 123,
+                                                                                        lineNumber: 137,
                                                                                         columnNumber: 29
                                                                                     }, this),
                                                                                     "Live planning · weather + budget + currency"
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 122,
+                                                                                lineNumber: 136,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -2131,19 +2310,19 @@ function AppShell() {
                                                                                         children: "I’ll generate a route, schedule, and a budget-aware plan."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 129,
+                                                                                        lineNumber: 143,
                                                                                         columnNumber: 29
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 127,
+                                                                                lineNumber: 141,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 121,
+                                                                        lineNumber: 135,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2154,23 +2333,23 @@ function AppShell() {
                                                                                 className: "h-12 w-12 rounded-2xl ai-orb"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 137,
+                                                                                lineNumber: 151,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                            lineNumber: 136,
+                                                                            lineNumber: 150,
                                                                             columnNumber: 27
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 135,
+                                                                        lineNumber: 149,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 120,
+                                                                lineNumber: 134,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2184,7 +2363,7 @@ function AppShell() {
                                                                                 children: "Trip request"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 144,
+                                                                                lineNumber: 158,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2197,7 +2376,7 @@ function AppShell() {
                                                                                         children: "⌘"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 147,
+                                                                                        lineNumber: 161,
                                                                                         columnNumber: 29
                                                                                     }, this),
                                                                                     " ",
@@ -2208,7 +2387,7 @@ function AppShell() {
                                                                                         children: "Enter"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 151,
+                                                                                        lineNumber: 165,
                                                                                         columnNumber: 29
                                                                                     }, this),
                                                                                     " ",
@@ -2216,13 +2395,13 @@ function AppShell() {
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 145,
+                                                                                lineNumber: 159,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 143,
+                                                                        lineNumber: 157,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -2235,7 +2414,7 @@ function AppShell() {
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 158,
+                                                                        lineNumber: 172,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2246,7 +2425,7 @@ function AppShell() {
                                                                                 children: "Tip: add dates for exact weather + costs."
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 169,
+                                                                                lineNumber: 183,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2256,19 +2435,19 @@ function AppShell() {
                                                                                 children: "Build itinerary"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 173,
+                                                                                lineNumber: 187,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 168,
+                                                                        lineNumber: 182,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 142,
+                                                                lineNumber: 156,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2279,7 +2458,7 @@ function AppShell() {
                                                                         desc: "Indoor backups if it rains."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 184,
+                                                                        lineNumber: 198,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(MiniCard, {
@@ -2287,7 +2466,7 @@ function AppShell() {
                                                                         desc: "Local currency conversion."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 185,
+                                                                        lineNumber: 199,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(MiniCard, {
@@ -2295,30 +2474,30 @@ function AppShell() {
                                                                         desc: "Morning → night schedule."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 186,
+                                                                        lineNumber: 200,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 183,
+                                                                lineNumber: 197,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 119,
+                                                        lineNumber: 133,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 118,
+                                                    lineNumber: 132,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, "welcome", true, {
                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                            lineNumber: 102,
+                                            lineNumber: 116,
                                             columnNumber: 17
                                         }, this),
                                         phase === "generating" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -2342,7 +2521,7 @@ function AppShell() {
                                                     className: "absolute inset-0 rounded-3xl glass elevated"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 204,
+                                                    lineNumber: 218,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2357,20 +2536,20 @@ function AppShell() {
                                                                         className: "aurora"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 210,
+                                                                        lineNumber: 224,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                         className: "absolute inset-0 grid-fade opacity-40"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 211,
+                                                                        lineNumber: 225,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 209,
+                                                                lineNumber: 223,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2385,12 +2564,12 @@ function AppShell() {
                                                                                     className: "h-9 w-9 rounded-xl ai-orb"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                    lineNumber: 217,
+                                                                                    lineNumber: 231,
                                                                                     columnNumber: 29
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 216,
+                                                                                lineNumber: 230,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2400,7 +2579,7 @@ function AppShell() {
                                                                                         children: "NomadAI is thinking…"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 221,
+                                                                                        lineNumber: 235,
                                                                                         columnNumber: 29
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2408,19 +2587,19 @@ function AppShell() {
                                                                                         children: "Building a weather-aware, budget-synced itinerary."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                        lineNumber: 224,
+                                                                                        lineNumber: 238,
                                                                                         columnNumber: 29
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 220,
+                                                                                lineNumber: 234,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 215,
+                                                                        lineNumber: 229,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2430,41 +2609,41 @@ function AppShell() {
                                                                                 text: "Extracting intent from your request"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 231,
+                                                                                lineNumber: 245,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThinkingRow, {
                                                                                 text: "Fetching weather forecast + best timing"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 232,
+                                                                                lineNumber: 246,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThinkingRow, {
                                                                                 text: "Converting budget to local currency"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 233,
+                                                                                lineNumber: 247,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThinkingRow, {
                                                                                 text: "Generating day-by-day plan"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 234,
+                                                                                lineNumber: 248,
                                                                                 columnNumber: 27
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ThinkingRow, {
                                                                                 text: "Rendering map + itinerary cards"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                                lineNumber: 235,
+                                                                                lineNumber: 249,
                                                                                 columnNumber: 27
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 230,
+                                                                        lineNumber: 244,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2472,30 +2651,30 @@ function AppShell() {
                                                                         children: "Real API calls may take a few seconds — this keeps the experience premium."
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                        lineNumber: 238,
+                                                                        lineNumber: 252,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 214,
+                                                                lineNumber: 228,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 208,
+                                                        lineNumber: 222,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 207,
+                                                    lineNumber: 221,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, "generating", true, {
                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                            lineNumber: 195,
+                                            lineNumber: 209,
                                             columnNumber: 17
                                         }, this),
                                         phase === "results" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["motion"].div, {
@@ -2516,15 +2695,16 @@ function AppShell() {
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "col-span-4 h-full min-h-0 min-w-0 overflow-hidden",
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$upgrade$2f$MapWrapper$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
-                                                        onOpenTrips: ()=>setSavedTripsOpen(true)
+                                                        onOpenTrips: ()=>setSavedTripsOpen(true),
+                                                        intent: intent
                                                     }, void 0, false, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 259,
+                                                        lineNumber: 273,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 258,
+                                                    lineNumber: 272,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2535,22 +2715,22 @@ function AppShell() {
                                                             className: "flex-1 min-h-0 overflow-auto",
                                                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$ChatPanel$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                                                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                                lineNumber: 266,
+                                                                lineNumber: 280,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 265,
+                                                            lineNumber: 279,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 264,
+                                                        lineNumber: 278,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 263,
+                                                    lineNumber: 277,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2563,17 +2743,17 @@ function AppShell() {
                                                             onSelectDay: setDay
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 274,
+                                                            lineNumber: 288,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 273,
+                                                        lineNumber: 287,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 272,
+                                                    lineNumber: 286,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2585,46 +2765,46 @@ function AppShell() {
                                                             onOpenExport: ()=>setExportOpen(true)
                                                         }, void 0, false, {
                                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                            lineNumber: 281,
+                                                            lineNumber: 295,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                        lineNumber: 280,
+                                                        lineNumber: 294,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                                    lineNumber: 279,
+                                                    lineNumber: 293,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, "results", true, {
                                             fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                            lineNumber: 249,
+                                            lineNumber: 263,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                    lineNumber: 99,
+                                    lineNumber: 113,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                                lineNumber: 98,
+                                lineNumber: 112,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                        lineNumber: 93,
+                        lineNumber: 107,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 60,
+                lineNumber: 74,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$upgrade$2f$ExportModal$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -2632,7 +2812,7 @@ function AppShell() {
                 onClose: ()=>setExportOpen(false)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 292,
+                lineNumber: 306,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$components$2f$upgrade$2f$SavedTripsDrawer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -2640,13 +2820,13 @@ function AppShell() {
                 onClose: ()=>setSavedTripsOpen(false)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 293,
+                lineNumber: 307,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-        lineNumber: 59,
+        lineNumber: 73,
         columnNumber: 5
     }, this);
 }
@@ -2662,7 +2842,7 @@ function MiniCard({ title, desc }) {
                 children: title
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 307,
+                lineNumber: 321,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2670,13 +2850,13 @@ function MiniCard({ title, desc }) {
                 children: desc
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 308,
+                lineNumber: 322,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-        lineNumber: 306,
+        lineNumber: 320,
         columnNumber: 5
     }, this);
 }
@@ -2688,7 +2868,7 @@ function ThinkingRow({ text }) {
                 className: "h-2.5 w-2.5 rounded-full bg-emerald-500/90 shadow-[0_0_14px_rgba(16,185,129,0.45)]"
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 316,
+                lineNumber: 330,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2696,7 +2876,7 @@ function ThinkingRow({ text }) {
                 children: text
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 317,
+                lineNumber: 331,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Documents$2f$GitHub$2f$NomadAI$2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2705,18 +2885,18 @@ function ThinkingRow({ text }) {
                     className: "h-full w-1/2 shimmer opacity-70"
                 }, void 0, false, {
                     fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                    lineNumber: 319,
+                    lineNumber: 333,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-                lineNumber: 318,
+                lineNumber: 332,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Documents/GitHub/NomadAI/components/AppShell.tsx",
-        lineNumber: 315,
+        lineNumber: 329,
         columnNumber: 5
     }, this);
 }
