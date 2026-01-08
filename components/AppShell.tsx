@@ -37,8 +37,50 @@ export default function AppShell() {
 
   const canPlan = useMemo(() => prompt.trim().length > 0, [prompt]);
   const [itinerary, setItinerary] = useState<Record<string, any[]>>({});
+  const [chatMessages, setChatMessages] = useState<ChatMsg[]>([]);
+  const [chatSending, setChatSending] = useState(false);
   
-  
+
+  async function onChatSend(text: string) {
+      setChatMessages((m) => [...m, { role: "user", content: text }]);
+      setChatSending(true);
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: text,
+            context: {
+              intent,
+              weather:"",
+              itinerary: itinerary,
+            },
+          }),
+        });
+
+        const data = await res.json();
+
+        const reply = typeof data.reply === "string" ? data.reply : "…";
+        setChatMessages((m) => [...m, { role: "assistant", content: reply }]);
+
+        // If AI decides it needs to update itinerary
+        if (data.itineraryPatch && typeof data.itineraryPatch === "object") {
+          console.log("Applying itinerary patch from AI:", data.itineraryPatch);
+          setItinerary((prev: any) => ({
+            ...prev,
+            ...data.itineraryPatch, // simple merge
+          }));
+        }
+      } catch {
+        setChatMessages((m) => [
+          ...m,
+          { role: "assistant", content: "Something went wrong calling the AI." },
+        ]);
+      } finally {
+        setChatSending(false);
+      }
+    }
   async function onPlan() {
     if (!canPlan) return;
 
@@ -294,7 +336,11 @@ console.log("Intent API response data:", data);
                   <div className="col-span-3 h-full min-h-0 min-w-0 overflow-hidden">
                     <div className="h-full min-h-0 rounded-3xl glass elevated overflow-hidden flex flex-col">
                       <div className="flex-1 min-h-0 overflow-auto">
-                        <ChatPanel />
+                        <ChatPanel
+                          messages={chatMessages}
+                          onSend={onChatSend}
+                          isSending={chatSending}
+                        />
                       </div>
                     </div>
                   </div>
