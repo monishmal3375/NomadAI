@@ -21,6 +21,7 @@ type Phase = "welcome" | "generating" | "results";
 // IMPORTANT: no defaults
 const DEFAULT_INTENT: Intent = {};
 
+
 export default function AppShell() {
   const [phase, setPhase] = useState<Phase>("welcome");
   const [prompt, setPrompt] = useState("");
@@ -35,7 +36,9 @@ export default function AppShell() {
   const [planError, setPlanError] = useState<string | null>(null);
 
   const canPlan = useMemo(() => prompt.trim().length > 0, [prompt]);
-
+  const [itinerary, setItinerary] = useState<Record<string, any[]>>({});
+  
+  
   async function onPlan() {
     if (!canPlan) return;
 
@@ -64,6 +67,21 @@ console.log("Intent API response data:", data);
       }
 
       setIntent(data.intent);
+      // after you setIntent(extracted)
+      const itinRes = await fetch("/api/itinerary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intent: data.intent,
+          weatherByDay: null, // later you can pass real weather data
+        }),
+      });
+      if (itinRes.ok) {
+        const itinData = await itinRes.json();
+        setItinerary(itinData.itinerary ?? {});
+      } else {
+        setItinerary({});
+      }
 
       // Simulated latency (keep your premium feel)
       await wait(700);
@@ -285,7 +303,13 @@ console.log("Intent API response data:", data);
                   <div className="col-span-3 h-full min-h-0 min-w-0 overflow-hidden">
                     <div className="h-full min-h-0 overflow-auto">
                       {/* if user didn't specify days, pass 1 so tabs don't look weird */}
-                      <ItineraryPanel day={day} days={intent.days ?? 1} onSelectDay={setDay} />
+                      {/* <ItineraryPanel day={day} days={intent.days ?? 1} onSelectDay={setDay} /> */}
+                      <ItineraryPanel
+                        day={day}
+                        days={intent.days ?? 1}
+                        onSelectDay={setDay}
+                        itinerary={itinerary}
+                      />
                     </div>
                   </div>
 

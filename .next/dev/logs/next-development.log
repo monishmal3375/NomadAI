@@ -370,3 +370,110 @@
 [00:31:02.435] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"Canada\",\n  \"days\": 4,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
 [00:31:02.542] Browser LOG     Intent API response status: 200
 [00:31:02.542] Browser LOG     Intent API response data: {"intent":{"days":4,"from":"Chicago","to":"Canada"}}
+[07:00:34.606] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[07:02:06.091] Server  LOG     Raw model response: {}
+[07:02:06.092] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"Indiana\",\n  \"days\": null,\n  \"people\": 3,\n  \"budget\": 3000,\n  \"prefs\": null\n}"
+[07:02:06.203] Browser LOG     Intent API response status: 200
+[07:02:06.203] Browser LOG     Intent API response data: {"intent":{"budget":3000,"from":"Chicago","people":3,"to":"Indiana"}}
+[07:04:10.921] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[07:04:25.911] Server  LOG     Raw model response: {}
+[07:04:25.912] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"Bloomington\",\n  \"days\": null,\n  \"people\": null,\n  \"budget\": null,\n  \"prefs\": null\n}"
+[07:04:26.018] Browser LOG     Intent API response status: 200
+[07:04:26.018] Browser LOG     Intent API response data: {"intent":{"from":"Chicago","to":"Bloomington"}}
+[07:10:41.404] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[07:11:01.491] Server  LOG     Raw model response: {}
+[07:11:01.492] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"New York\",\n  \"days\": 4,\n  \"people\": 4,\n  \"budget\": 5000,\n  \"prefs\": null\n}"
+[07:11:01.601] Browser LOG     Intent API response status: 200
+[07:11:01.601] Browser LOG     Intent API response data: {"intent":{"budget":5000,"days":4,"from":"Chicago","people":4,"to":"New York"}}
+[08:06:16.259] Server  LOG     ✓ Compiled in 205ms
+[08:08:01.556] Server  LOG     ✓ Compiled in 123ms
+[08:08:02.356] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:08:03.128] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:08:45.178] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:08:45.178] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./Documents/GitHub/NomadAI/components/AppShell.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[08:08:45.179] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:08:45.186] Server  LOG     ✓ Compiled in 50ms
+[08:08:45.679] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:08:46.117] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:08:49.788] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:08:49.789] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./Documents/GitHub/NomadAI/components/AppShell.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[08:08:49.789] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:08:49.873] Server  LOG     ✓ Compiled in 58ms
+[08:08:50.038] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:08:51.117] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:12:20.885] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:12:20.885] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./Documents/GitHub/NomadAI/components/AppShell.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[08:12:20.887] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:12:20.907] Server  LOG     ✓ Compiled in 63ms
+[08:12:21.303] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:12:22.118] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:13:40.973] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:13:41.124] Server  LOG     ✓ Compiled in 206ms
+[08:13:41.352] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:13:42.117] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:14:11.235] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:14:11.366] Browser ERROR   uncaughtError: Error: Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+See https://react.dev/link/invalid-hook-call for tips about how to debug and fix this problem.
+[08:14:50.322] Server  LOG     ✓ Compiled in 57ms
+[08:14:50.325] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:14:50.325] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./Documents/GitHub/NomadAI/components/AppShell.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[08:14:50.325] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:14:50.736] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:15:13.468] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:15:40.469] Server  LOG     Raw model response: {}
+[08:15:40.470] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 3,\n  \"people\": 3,\n  \"budget\": 6000,\n  \"prefs\": null\n}"
+[08:15:40.581] Browser LOG     Intent API response status: 200
+[08:15:40.581] Browser LOG     Intent API response data: {"intent":{"budget":6000,"days":3,"from":"Chicago","people":3,"to":"California"}}
+[08:15:40.581] Browser ERROR   {}
+[08:21:27.736] Server  LOG     ✓ Compiled in 76ms
+[08:21:27.921] Browser ERROR   uncaughtError: ReferenceError: extractIntentFromPrompt is not defined
+[08:23:57.146] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[08:23:57.160] Server  LOG     ✓ Compiled in 48ms
+[08:23:57.900] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:24:03.653] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:24:27.160] Server  LOG     Raw model response: {}
+[08:24:27.161] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 5,\n  \"people\": 6,\n  \"budget\": 6000,\n  \"prefs\": null\n}"
+[08:24:27.267] Browser LOG     Intent API response status: 200
+[08:24:27.268] Browser LOG     Intent API response data: {"intent":{"budget":6000,"days":5,"from":"Chicago","people":6,"to":"California"}}
+[08:24:27.703] Server  ERROR   ⨯ Error: Missing credentials. Please pass an `apiKey`, or set the `OPENAI_API_KEY` environment variable.
+[08:25:09.644] Server  ERROR   ⨯ Error: Missing credentials. Please pass an `apiKey`, or set the `OPENAI_API_KEY` environment variable.
+[08:25:09.913] Browser ERROR   uncaughtError: Error: Missing credentials. Please pass an `apiKey`, or set the `OPENAI_API_KEY` environment variable.
+[08:27:33.425] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:28:10.931] Server  LOG     Raw model response: {}
+[08:28:10.932] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 6,\n  \"people\": 5,\n  \"budget\": 6000,\n  \"prefs\": null\n}"
+[08:28:11.039] Browser LOG     Intent API response status: 200
+[08:28:11.039] Browser LOG     Intent API response data: {"intent":{"budget":6000,"days":6,"from":"Chicago","people":5,"to":"California"}}
+[08:31:58.142] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:32:17.788] Server  LOG     Raw model response: {}
+[08:32:17.789] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 6,\n  \"people\": 6,\n  \"budget\": 6000,\n  \"prefs\": null\n}"
+[08:32:17.898] Browser LOG     Intent API response status: 200
+[08:32:17.898] Browser LOG     Intent API response data: {"intent":{"budget":6000,"days":6,"from":"Chicago","people":6,"to":"California"}}
+[08:35:43.175] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[08:35:55.083] Server  LOG     Raw model response: {}
+[08:35:55.084] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 6,\n  \"people\": 6,\n  \"budget\": 6000,\n  \"prefs\": null\n}"
+[08:35:55.217] Server  LOG     Itinerary system prompt: "\nGenerate an itinerary dictionary for a trip.\n\nRules:\n- Output MUST be a JSON object with day keys: \"1\"...\"6\".\n- Each day value MUST be an array of items.\n- Each item MUST have: time, period, activity, location, detail.\n- time should be 24h \"HH:MM\".\n- period must be one of: morning, afternoon, evening, night.\n- Use destination city from intent.to. If unknown, still produce a generic itinerary.\n- Use intent.prefs if present.\n- If weatherByDay is provided, incorporate it (suggest indoor options if cold/rain).\n- Keep it realistic: 4-7 items per day.\n\nINPUT INTENT:\n{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 6,\n  \"people\": 6,\n  \"budget\": 6000\n}\n\nWEATHER (optional):\nnull\n\nReturn JSON now.\n"
+[08:35:55.224] Browser LOG     Intent API response status: 200
+[08:35:55.224] Browser LOG     Intent API response data: {"intent":{"budget":6000,"days":6,"from":"Chicago","people":6,"to":"California"}}
