@@ -9,6 +9,8 @@ import MapWrapper from "./upgrade/MapWrapper";
 import ItineraryPanel from "./upgrade/ItineraryPanel";
 import StatsRail from "./upgrade/StatsRail";
 
+import ChatPanel from "./ChatPanel";
+
 import ExportModal from "./upgrade/ExportModal";
 import SavedTripsDrawer from "./upgrade/SavedTripsDrawer";
 
@@ -22,12 +24,11 @@ const DEFAULT_INTENT: Intent = {
   days: 3,
   people: 2,
   budget: 5000,
-  // IMPORTANT: IntentCard uses `prefs`, so keep this name
   prefs: ["museums", "food", "night views"],
 };
 
 export default function AppShell() {
-  const [phase, setPhase] = useState<Phase>("welcome");// change to "welcome" if you want
+  const [phase, setPhase] = useState<Phase>("welcome");
   const [prompt, setPrompt] = useState("");
 
   const [day, setDay] = useState(1);
@@ -42,8 +43,10 @@ export default function AppShell() {
 
   async function onPlan() {
     if (!canPlan) return;
+
     setPhase("generating");
 
+    // Simulated latency (replace later with real API calls)
     await wait(700);
     await wait(900);
     await wait(900);
@@ -53,9 +56,8 @@ export default function AppShell() {
   }
 
   return (
-    // KEY: lock the entire app to viewport height and stop body scrolling
     <div className="h-screen overflow-hidden">
-      <div className="mx-auto max-w-[1180px] px-6 py-6 h-full flex flex-col">
+      <div className="w-full px-6 py-6 h-full flex flex-col">
         {/* Top bar */}
         <header className="shrink-0 mb-6 flex items-center justify-between relative z-50">
           <div>
@@ -88,11 +90,11 @@ export default function AppShell() {
         </header>
 
         {/* Main layout */}
-        {/* KEY: flex-1 + min-h-0 allows children to be scroll containers */}
         <div className="flex-1 min-h-0 flex gap-6">
+          {/* Keep sidebar visible (your choice). If you want it hidden until results,
+              change this to: {phase === "results" ? <Sidebar /> : null} */}
           <Sidebar />
 
-          {/* KEY: overflow-hidden so NOTHING creates page scroll */}
           <main className="flex-1 min-w-0 relative overflow-hidden">
             <AnimatePresence mode="wait">
               {/* WELCOME */}
@@ -188,78 +190,22 @@ export default function AppShell() {
                 </motion.div>
               )}
 
-              {/* GENERATING */}
+              {/* GENERATING (RESTORED POPUP OVERLAY) */}
               {phase === "generating" && (
                 <motion.div
                   key="generating"
                   initial={{ opacity: 0, scale: 0.985 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: 0.22 }}
                   className="h-full relative overflow-hidden"
                 >
-                  <div className="h-full grid grid-cols-12 gap-6 opacity-60 blur-[0.2px] min-w-0">
-                    <div className="col-span-6 rounded-3xl glass elevated p-6 relative overflow-hidden">
-                      <div className="text-sm text-slate-500">Generating route</div>
-                      <div className="mt-2 text-2xl font-semibold text-slate-900">
-                        Building your plan…
-                      </div>
+                  {/* Dimmed background */}
+                  <div className="absolute inset-0 rounded-3xl glass elevated" />
 
-                      <div className="mt-6 space-y-3">
-                        <SkeletonLine />
-                        <SkeletonLine />
-                        <SkeletonLine />
-                      </div>
-
-                      <div className="absolute inset-0 opacity-40 pointer-events-none">
-                        <div className="absolute inset-0 shimmer" />
-                      </div>
-                    </div>
-
-                    <div className="col-span-4 rounded-3xl glass elevated p-6 relative overflow-hidden">
-                      <div className="text-lg font-semibold text-slate-900">NomadAI</div>
-                      <div className="text-sm text-slate-500">Trip planning chat</div>
-
-                      <div className="mt-6 space-y-4">
-                        <SkeletonBubble />
-                        <SkeletonBubble />
-                        <SkeletonBubble />
-                      </div>
-
-                      <div className="absolute inset-0 opacity-40 pointer-events-none">
-                        <div className="absolute inset-0 shimmer" />
-                      </div>
-                    </div>
-
-                    <div className="col-span-2 space-y-6">
-                      <div className="rounded-3xl glass elevated p-5 relative overflow-hidden">
-                        <SkeletonLine />
-                        <div className="mt-3 h-8 w-24 rounded-xl bg-slate-900/10" />
-                        <div className="absolute inset-0 opacity-40 pointer-events-none">
-                          <div className="absolute inset-0 shimmer" />
-                        </div>
-                      </div>
-
-                      <div className="rounded-3xl glass elevated p-5 relative overflow-hidden">
-                        <SkeletonLine />
-                        <div className="mt-3 h-8 w-20 rounded-xl bg-slate-900/10" />
-                        <div className="absolute inset-0 opacity-40 pointer-events-none">
-                          <div className="absolute inset-0 shimmer" />
-                        </div>
-                      </div>
-
-                      <div className="rounded-3xl glass elevated p-5 relative overflow-hidden">
-                        <SkeletonLine />
-                        <div className="mt-3 h-8 w-28 rounded-xl bg-slate-900/10" />
-                        <div className="absolute inset-0 opacity-40 pointer-events-none">
-                          <div className="absolute inset-0 shimmer" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
+                  {/* Popup */}
                   <div className="absolute inset-0 flex items-center justify-center p-6">
-                    <div className="w-full max-w-xl rounded-[28px] bg-white/70 border border-white/50 elevated p-6 relative overflow-hidden">
+                    <div className="w-full max-w-2xl rounded-[28px] bg-white/70 border border-white/50 elevated p-6 relative overflow-hidden">
                       <div className="absolute inset-0 noise">
                         <div className="aurora" />
                         <div className="absolute inset-0 grid-fade opacity-40" />
@@ -298,7 +244,7 @@ export default function AppShell() {
                 </motion.div>
               )}
 
-              {/* RESULTS */}
+              {/* RESULTS: 4 columns */}
               {phase === "results" && (
                 <motion.div
                   key="results"
@@ -308,19 +254,32 @@ export default function AppShell() {
                   transition={{ duration: 0.18 }}
                   className="h-full min-h-0 grid grid-cols-12 gap-6 min-w-0"
                 >
-                  {/* Map column */}
-                  <div className="col-span-6 h-full min-h-0 min-w-0 overflow-hidden">
+                  {/* 1) Map */}
+                  <div className="col-span-4 h-full min-h-0 min-w-0 overflow-hidden">
                     <MapWrapper onOpenTrips={() => setSavedTripsOpen(true)} />
                   </div>
 
-                  {/* Center column */}
-                  <div className="col-span-4 h-full min-h-0 min-w-0 overflow-hidden">
-                    <ItineraryPanel day={day} days={days} onSelectDay={setDay} />
+                  {/* 2) Chat */}
+                  <div className="col-span-3 h-full min-h-0 min-w-0 overflow-hidden">
+                    <div className="h-full min-h-0 rounded-3xl glass elevated overflow-hidden flex flex-col">
+                      <div className="flex-1 min-h-0 overflow-auto">
+                        <ChatPanel />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Right column */}
+                  {/* 3) Day planner */}
+                  <div className="col-span-3 h-full min-h-0 min-w-0 overflow-hidden">
+                    <div className="h-full min-h-0 overflow-auto">
+                      <ItineraryPanel day={day} days={days} onSelectDay={setDay} />
+                    </div>
+                  </div>
+
+                  {/* 4) Stats */}
                   <div className="col-span-2 h-full min-h-0 min-w-0 overflow-hidden">
-                    <StatsRail intent={intent} onOpenExport={() => setExportOpen(true)} />
+                    <div className="h-full min-h-0 overflow-auto">
+                      <StatsRail intent={intent} onOpenExport={() => setExportOpen(true)} />
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -356,22 +315,9 @@ function ThinkingRow({ text }: { text: string }) {
     <div className="flex items-center gap-3">
       <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/90 shadow-[0_0_14px_rgba(16,185,129,0.45)]" />
       <div className="text-sm text-slate-700">{text}</div>
-      <div className="ml-auto h-2 w-24 rounded-full bg-slate-900/10 overflow-hidden">
+      <div className="ml-auto h-2 w-28 rounded-full bg-slate-900/10 overflow-hidden">
         <div className="h-full w-1/2 shimmer opacity-70" />
       </div>
-    </div>
-  );
-}
-
-function SkeletonLine() {
-  return <div className="h-4 w-full rounded-xl bg-slate-900/10" />;
-}
-
-function SkeletonBubble() {
-  return (
-    <div className="rounded-2xl bg-white/70 border border-white/45 p-4">
-      <div className="h-4 w-[80%] rounded-xl bg-slate-900/10" />
-      <div className="mt-3 h-4 w-[60%] rounded-xl bg-slate-900/10" />
     </div>
   );
 }
