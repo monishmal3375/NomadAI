@@ -1,22 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const { status } = useSession(); // "loading" | "authenticated" | "unauthenticated"
 
   useEffect(() => {
-    const ok = localStorage.getItem("nomadai_authed") === "true";
-    if (!ok) {
+    if (status === "unauthenticated") {
       router.replace("/login");
-      return;
     }
-    setReady(true);
-  }, [router]);
+  }, [status, router]);
 
-  if (!ready) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="rounded-3xl glass elevated px-6 py-5">
@@ -25,6 +23,11 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
         </div>
       </div>
     );
+  }
+
+  if (status === "unauthenticated") {
+    // While redirecting
+    return null;
   }
 
   return <>{children}</>;

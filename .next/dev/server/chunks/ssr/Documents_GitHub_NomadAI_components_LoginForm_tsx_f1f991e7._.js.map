@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/monishmalla/Documents/GitHub/NomadAI/components/LoginForm.tsx"],"sourcesContent":["\"use client\";\n\nimport { signIn } from \"next-auth/react\";\n\nexport default function LoginForm() {\n  return (\n    <div className=\"space-y-4\">\n      <button\n        type=\"button\"\n        onClick={() => signIn(\"google\", { callbackUrl: \"/\" })}\n        className=\"h-11 w-full rounded-2xl bg-white/70 border border-white/55 text-sm text-slate-900 hover:bg-white transition\"\n      >\n        Continue with Google\n      </button>\n\n      <div className=\"text-center text-xs text-slate-500\">or</div>\n\n      <div className=\"rounded-2xl bg-white/60 border border-white/45 p-3 text-sm text-slate-600\">\n        Email login is UI-only for now. Use Google sign-in above.\n      </div>\n    </div>\n  );\n}"],"names":[],"mappings":";;;;;AAEA;AAFA;;;AAIe,SAAS;IACtB,qBACE,gRAAC;QAAI,WAAU;;0BACb,gRAAC;gBACC,MAAK;gBACL,SAAS,IAAM,IAAA,0LAAM,EAAC,UAAU;wBAAE,aAAa;oBAAI;gBACnD,WAAU;0BACX;;;;;;0BAID,gRAAC;gBAAI,WAAU;0BAAqC;;;;;;0BAEpD,gRAAC;gBAAI,WAAU;0BAA4E;;;;;;;;;;;;AAKjG"}}]
+}

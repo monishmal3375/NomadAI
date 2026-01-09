@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/monishmalla/Documents/GitHub/NomadAI/app/logout/page.tsx"],"sourcesContent":["\"use client\";\n\nimport { useEffect } from \"react\";\nimport { useRouter } from \"next/navigation\";\n\nexport default function LogoutPage() {\n  const router = useRouter();\n\n  useEffect(() => {\n    localStorage.removeItem(\"nomadai_authed\");\n    router.replace(\"/login\");\n  }, [router]);\n\n  return (\n    <div className=\"min-h-screen flex items-center justify-center px-6\">\n      <div className=\"rounded-3xl glass elevated px-6 py-5\">\n        <div className=\"text-slate-900 font-semibold\">Logging out…</div>\n        <div className=\"text-slate-500 text-sm mt-1\">Redirecting</div>\n      </div>\n    </div>\n  );\n}"],"names":[],"mappings":";;;;;AAEA;AACA;;;AAHA;;;AAKe,SAAS;;IACtB,MAAM,SAAS,IAAA,oLAAS;IAExB,IAAA,4MAAS;gCAAC;YACR,aAAa,UAAU,CAAC;YACxB,OAAO,OAAO,CAAC;QACjB;+BAAG;QAAC;KAAO;IAEX,qBACE,+NAAC;QAAI,WAAU;kBACb,cAAA,+NAAC;YAAI,WAAU;;8BACb,+NAAC;oBAAI,WAAU;8BAA+B;;;;;;8BAC9C,+NAAC;oBAAI,WAAU;8BAA8B;;;;;;;;;;;;;;;;;AAIrD;GAhBwB;;QACP,oLAAS;;;KADF"}},
+    {"offset": {"line": 74, "column": 0}, "map": {"version":3,"sources":["file:///Users/monishmalla/Documents/GitHub/NomadAI/node_modules/next/navigation.js"],"sourcesContent":["module.exports = require('./dist/client/components/navigation')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
+}
