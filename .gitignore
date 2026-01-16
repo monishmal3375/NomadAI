@@ -47,3 +47,6 @@ tsconfig.tsbuildinfo
 .env
 .env.*
 API.json
+
+node_modules/
+
