@@ -53,20 +53,20 @@ Create a file called:
 
 Example:
 
-```bash
-# NextAuth
+``bash
+NextAuth
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your_long_random_secret_here
 
-# Google OAuth
+Google OAuth
 GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 
-# OpenAI API Key
+OpenAI API Key
 OPENAI_API_KEY=your_openai_api_key_here
 
-
-🔥 External AI Token Usage (OpenAI)
+---
+## 🔥 External AI Token Usage (OpenAI)
 
 NomadAI uses the OpenAI API for:
 	•	Extracting trip intent (from/to, days, people, budget, preferences)
@@ -81,7 +81,7 @@ OpenAI charges based on tokens, which are pieces of text (both input + output).
 
 Even short requests can use more tokens if the app includes a lot of context (example: weather data + itinerary dictionary + trip summary).
 
-What increases token usage
+## What increases token usage
 
 Token usage goes up when:
 	•	The user types long prompts
@@ -95,8 +95,8 @@ These are rough UI demo estimates (varies by model + response length):
 	•	Intent extraction request: low (small JSON)
 	•	Day planner generation: medium to high (multi-day structured output)
 	•	Chat requests: depends on how much context is provided
-
-Cost control / limits (recommended)
+---
+## Cost control / limits (recommended)
 
 To prevent token waste, the app should:
 	•	Use short structured JSON outputs when possible
@@ -106,8 +106,8 @@ To prevent token waste, the app should:
 	•	Cache results so repeated actions do not trigger extra API calls
 
 ⚠️ Important: A valid OpenAI API key is required to use AI features, and usage may result in charges depending on your OpenAI billing plan.
-
-✅ Testing
+---
+## ✅ Testing
 
 This repo includes unit tests for login and auth-related components.
 
