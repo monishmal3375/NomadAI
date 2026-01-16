@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NomadAI ✈️🤖  
+AI-powered travel itinerary planner with a premium UI (map + chat + day planner + trip summary).
 
-## Getting Started
+NomadAI lets a user type a natural language trip request like:
 
-First, run the development server:
+> “I want to go from Chicago to New York for 4 days with 4 people and a $3000 budget.”
+
+…and the app extracts intent, builds UI panels, and generates itinerary content using AI.
+
+---
+
+## Features
+
+✅ Google Sign-In (NextAuth)  
+✅ AI Intent Extraction (from/to/days/people/budget/preferences)  
+✅ 4-column layout:
+- Map panel (route display)
+- AI chat column
+- Day planner column
+- Stats rail (summary, daily target, currency, weather)  
+✅ UI-focused demo experience (fast + clean)
+
+---
+
+## Tech Stack
+
+- **Next.js 16 (App Router)**
+- **React 19**
+- **TypeScript**
+- **TailwindCSS**
+- **NextAuth (Google OAuth)**
+- **OpenAI API** (intent extraction + itinerary generation)
+- **Jest + Testing Library** (unit tests)
+
+---
+
+## Requirements
+
+Make sure you have these installed:
+
+- **Node.js 18+**
+- **npm** (or pnpm/yarn)
+- A **Google Cloud OAuth Client**
+- An **OpenAI API Key**
+
+---
+
+## Environment Variables
+
+Create a file called:
+
+✅ `.env.local`
+
+Example:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_long_random_secret_here
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# OpenAI API Key
+OPENAI_API_KEY=your_openai_api_key_here
