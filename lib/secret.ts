@@ -1,21 +1,13 @@
-import fs from "fs";
-import path from "path";
-
-type ApiJson = { OPENAI_API_KEY?: string };
+// lib/secret.ts
 
 export function getOpenAIKey(): string {
-  const p = path.join(process.cwd(), "api.json");
-  if (!fs.existsSync(p)) {
+  const key = process.env.OPENAI_API_KEY?.trim();
+
+  if (!key) {
     throw new Error(
-      `api.json not found at project root. Create it with { "OPENAI_API_KEY": "..." }`
+      'OPENAI_API_KEY is missing. Create a .env.local file in the project root with:\n\nOPENAI_API_KEY="YOUR_KEY_HERE"\n'
     );
   }
-
-  const raw = fs.readFileSync(p, "utf8");
-  const json = JSON.parse(raw) as ApiJson;
-
-  const key = json.OPENAI_API_KEY?.trim();
-  if (!key) throw new Error("OPENAI_API_KEY missing in api.json");
 
   return key;
 }

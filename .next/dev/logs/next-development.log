@@ -1,15 +1,10 @@
-[00:00:00.584] Server  LOG     ✓ Ready in 428ms
-[00:00:00.934] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:17.820] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:17.820] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:00:30.250] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:34.718] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:39.867] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:40.029] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:01:12.711] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:20.354] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:24.632] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:24.800] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[00:01:34.277] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:37.221] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:37.395] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:00.839] Server  LOG     ✓ Ready in 678ms
+[00:00:06.573] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:10.601] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:10.778] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:14.816] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:32.193] Server  LOG     Raw model response: {}
+[00:00:32.195] Server  LOG     Model output: "{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 4,\n  \"people\": 3,\n  \"budget\": 5000,\n  \"prefs\": null\n}"
+[00:00:32.243] Server  LOG     Itinerary system prompt: "\nGenerate an itinerary dictionary for a trip.\n\nRules:\n- Output MUST be a JSON object with day keys: \"1\"...\"4\".\n- Each day value MUST be an array of items.\n- Each item MUST have: time, period, activity, location, detail.\n- time should be 24h \"HH:MM\".\n- period must be one of: morning, afternoon, evening, night.\n- Use destination city from intent.to. If unknown, still produce a generic itinerary.\n- Use intent.prefs if present.\n- If weatherByDay is provided, incorporate it (suggest indoor options if cold/rain).\n- Keep it realistic: 4-7 items per day.\n\nINPUT INTENT:\n{\n  \"from\": \"Chicago\",\n  \"to\": \"California\",\n  \"days\": 4,\n  \"people\": 3,\n  \"budget\": 5000\n}\n\nWEATHER (optional):\nnull\n\nReturn JSON now.\n"
+[00:00:32.302] Browser LOG     Intent API response status: 200
+[00:00:32.302] Browser LOG     Intent API response data: {"intent":{"budget":5000,"days":4,"from":"Chicago","people":3,"to":"California"}}
