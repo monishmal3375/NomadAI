@@ -23,6 +23,8 @@ tsconfig.tsbuildinfo
 .env.*
 .env.local
 
-# keys / secrets files
+# (if you used this before)
 API.json
 api.json
+
+.env.local
