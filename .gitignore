@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+
+# build output
+dist/
+build/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# typescript
+tsconfig.tsbuildinfo
+
+# env + secrets
+.env
+.env.*
+.env.local
+
+# (if you used this before)
+API.json
+api.json
+
+.env.local
