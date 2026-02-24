@@ -42,7 +42,7 @@ The application uses AI to extract trip details, generate a personalized itinera
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** version 18 or higher ([download here](https://nodejs.org/))
+- **Node.js** version 20.9 or higher ([download here](https://nodejs.org/))
 - **npm** (comes with Node.js)
 - **Git** ([download here](https://git-scm.com/))
 
