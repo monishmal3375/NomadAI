@@ -183,15 +183,28 @@ If `OPENAI_API_KEY` is missing or invalid, the following API routes will fail:
 
 **Missing Google OAuth Credentials:**
 
-If Google OAuth variables are missing, you'll see:
-```
-[next-auth][error][OAUTH_CALLBACK_ERROR]
-invalid_client
-```
+If `GOOGLE_CLIENT_ID` or `GOOGLE_CLIENT_SECRET` is missing or empty, Google sign-in will fail. This is a configuration issue, not a broken sign-in button.
+
+**Common errors you'll see:**
+- `client_id is required` - The `GOOGLE_CLIENT_ID` is missing or empty
+- `invalid_client` - Credentials are incorrect or not properly configured
+- `[next-auth][error][OAUTH_CALLBACK_ERROR]` - General OAuth configuration error
 
 **Where to find the error:** 
+- Browser console (F12 → Console tab) when clicking the sign-in button
 - Terminal (server-side errors)
-- Browser console (F12 → Console tab for client-side errors)
+
+**How to fix:**
+1. Verify `.env.local` exists and contains both:
+```
+   GOOGLE_CLIENT_ID=your_id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=GOCSPX-your_secret
+```
+2. Ensure the authorized redirect URI is set in [Google Cloud Console](https://console.cloud.google.com/):
+```
+   http://localhost:3000/api/auth/callback/google
+```
+3. Restart the development server after adding credentials
 
 **General Log File Locations:**
 - **Development:** All logs appear in the terminal where you ran `npm run dev`
