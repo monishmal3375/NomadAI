@@ -164,14 +164,22 @@ npm start
 
 ### Troubleshooting Missing Environment Variables
 
-**Missing OpenAI Key:**
+**Missing OpenAI API Key:**
 
-If `OPENAI_API_KEY` is missing, you'll see this error in the terminal:
-```
-Error: OpenAI API key not configured
-```
+If `OPENAI_API_KEY` is missing or invalid, the following API routes will fail:
+- `/api/intent` - Trip intent extraction
+- `/api/itinerary` - Day-by-day itinerary generation  
+- `/api/chat` - AI chat responses
 
-**Where to find the error:** Check the terminal where `npm run dev` is running.
+**What you'll see:**
+- API errors in the browser console (F12 → Console tab) when attempting to use these features
+- Server-side errors in the terminal where `npm run dev` is running
+- Features that depend on OpenAI will not work
+
+**How to fix:**
+1. Verify `.env.local` exists in the project root
+2. Ensure it contains: `OPENAI_API_KEY=sk-proj-your_actual_key_here`
+3. Restart the development server after adding the key
 
 **Missing Google OAuth Credentials:**
 
