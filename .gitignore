@@ -28,3 +28,4 @@ API.json
 api.json
 
 .env.local
+*.backup
