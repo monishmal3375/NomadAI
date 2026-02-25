@@ -74,7 +74,7 @@ export default function LoginPage() {
             </div>
 
             <h1 className="mt-5 text-2xl font-semibold text-slate-900">
-              Sign in with email
+              Sign in to NomadAI
             </h1>
             <p className="mt-2 text-slate-600">
               Plan trips using live weather + currency + budget-aware suggestions.
@@ -83,13 +83,6 @@ export default function LoginPage() {
 
           <div className="px-10 pb-10">
             <LoginForm />
-
-            <div className="mt-5 flex items-center justify-between text-sm">
-              <span className="text-slate-500">Demo: any email/password works</span>
-              <button className="text-slate-700 hover:underline decoration-slate-300">
-                Forgot password?
-              </button>
-            </div>
 
             <div className="mt-6 text-center text-xs text-slate-500">
               By continuing, you agree to our{" "}
